@@ -1,11 +1,14 @@
 import { UserModel } from '../models/UserModel';
 import { HealthProfileModel } from '../models/HealthProfileModel';
 import { PasswordService } from '../../services/password/PasswordService';
+import { seedFoodsDatabase } from './seedFoods';
 
 const passwordService = new PasswordService();
 
 export const seedInitialAdminAndUsers = async () => {
   try {
+    // Seed Food Nutrition Database
+    await seedFoodsDatabase();
     // 1. Seed Demo Admin (Gmail)
     const gmailAdmin = await UserModel.findOne({ email: 'admin@gmail.com' });
     if (!gmailAdmin) {

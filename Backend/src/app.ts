@@ -5,6 +5,7 @@ import healthRoutes from './framework/routes/health.routes';
 import authRoutes from './framework/routes/auth.routes';
 import adminRoutes from './framework/routes/admin.routes';
 import userRoutes from './framework/routes/user.routes';
+import nutritionRoutes from './framework/routes/nutrition.routes';
 import { globalErrorHandler } from './adapters/middlewares/error.middleware';
 
 const app: Application = express();
@@ -22,6 +23,7 @@ app.use('/api', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/nutrition', nutritionRoutes);
 
 // Global Error Middleware
 app.use(globalErrorHandler);

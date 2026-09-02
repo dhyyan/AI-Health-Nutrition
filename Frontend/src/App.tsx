@@ -10,6 +10,7 @@ import { LoginPage } from './pages/auth/LoginPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { NutritionPage } from './pages/nutrition/NutritionPage';
 import { HealthProfilePageLayout } from './pages/profile/HealthProfilePageLayout';
 import { PersonalTab } from './pages/profile/tabs/PersonalTab';
 import { BMITab } from './pages/profile/tabs/BMITab';
@@ -64,6 +65,7 @@ export const App: React.FC = () => {
             {/* Authenticated User Protected Routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/nutrition" element={<NutritionPage />} />
               <Route path="/profile" element={<HealthProfilePageLayout />}>
                 <Route index element={<Navigate to="/profile/personal" replace />} />
                 <Route path="personal" element={<PersonalTab />} />
