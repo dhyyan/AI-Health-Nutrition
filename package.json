@@ -1,0 +1,15 @@
+{
+  "name": "ai-health-nutrition-workspace",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "Backend",
+    "Frontend"
+  ],
+  "scripts": {
+    "dev:backend": "npm --prefix Backend run dev",
+    "dev:frontend": "npm --prefix Frontend run dev",
+    "build:backend": "npm --prefix Backend run build",
+    "build:frontend": "npm --prefix Frontend run build"
+  }
+}

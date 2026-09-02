@@ -1,0 +1,23 @@
+# Node & Build Outputs
+node_modules/
+dist/
+build/
+.env
+*.log
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+# Sub-directory ignores
+Backend/node_modules/
+Backend/dist/
+Backend/.env
+Backend/uploads/
+
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.env
