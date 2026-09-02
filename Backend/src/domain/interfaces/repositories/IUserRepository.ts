@@ -6,5 +6,7 @@ export interface IUserRepository {
   create(user: User): Promise<User>;
   update(user: User): Promise<User>;
   delete(id: string): Promise<boolean>;
-  findAll(): Promise<User[]>;
+  findAll(query?: { search?: string; status?: string; role?: string }): Promise<User[]>;
+  count(query?: { search?: string; status?: string; role?: string }): Promise<number>;
 }
+

@@ -77,8 +77,30 @@ export class UserRepository implements IUserRepository {
     return res !== null;
   }
 
-  async findAll(): Promise<User[]> {
-    const docs = await UserModel.find().sort({ createdAt: -1 });
+  private buildMongoQuery(query?: { search?: string; status?: string; role?: string }) {
+    const mongoQuery: any = {};
+    if (query?.status) {
+      mongoQuery.status = query.status;
+    }
+    if (query?.role) {
+      mongoQuery.role = query.role;
+    }
+    if (query?.search) {
+      const searchRegex = new RegExp(query.search.trim(), 'i');
+      mongoQuery.$or = [{ name: searchRegex }, { email: searchRegex }];
+    }
+    return mongoQuery;
+  }
+
+  async findAll(query?: { search?: string; status?: string; role?: string }): Promise<User[]> {
+    const mongoQuery = this.buildMongoQuery(query);
+    const docs = await UserModel.find(mongoQuery).sort({ createdAt: -1 });
     return docs.map((doc) => this.mapToDomain(doc));
   }
+
+  async count(query?: { search?: string; status?: string; role?: string }): Promise<number> {
+    const mongoQuery = this.buildMongoQuery(query);
+    return await UserModel.countDocuments(mongoQuery);
+  }
 }
+

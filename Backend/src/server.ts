@@ -1,6 +1,7 @@
 import app from './app';
 import { CONFIG } from './shared/constants/config';
 import { connectDatabase } from './framework/database/connection';
+import { seedInitialAdminAndUsers } from './framework/database/seed/seedAdmin';
 
 const startServer = async () => {
   await connectDatabase();
@@ -8,7 +9,9 @@ const startServer = async () => {
   const server = app.listen(CONFIG.PORT, () => {
     console.log(`🚀 Server running in ${CONFIG.NODE_ENV} mode on port ${CONFIG.PORT}`);
     console.log(`🔗 Health Check: http://localhost:${CONFIG.PORT}/api/health`);
+    seedInitialAdminAndUsers().catch((err) => console.error('Seeding error:', err));
   });
+
 
   server.on('error', (err: any) => {
     if (err.code === 'EADDRINUSE') {
