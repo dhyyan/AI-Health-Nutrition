@@ -20,6 +20,8 @@ export class HealthProfileRepository implements IHealthProfileRepository {
       activityLevel: doc.activityLevel,
       sleepHours: doc.sleepHours,
       dietaryPreference: doc.dietaryPreference,
+      hasDiabetes: doc.hasDiabetes,
+      diabetesStatus: doc.diabetesStatus,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -48,6 +50,8 @@ export class HealthProfileRepository implements IHealthProfileRepository {
         activityLevel: profile.activityLevel,
         sleepHours: profile.sleepHours,
         dietaryPreference: profile.dietaryPreference,
+        hasDiabetes: profile.hasDiabetes,
+        diabetesStatus: profile.diabetesStatus,
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );

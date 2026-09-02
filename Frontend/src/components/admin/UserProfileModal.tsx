@@ -192,11 +192,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                     </div>
                     <div>
                       <span className="text-slate-500 block">Activity Level</span>
-                      <span className="font-semibold text-slate-200 capitalize">{healthProfile.lifestyleHabits?.activityLevel || 'Moderate'}</span>
+                      <span className="font-semibold text-slate-200 capitalize">{healthProfile.activityLevel || 'Moderate'}</span>
                     </div>
                     <div>
                       <span className="text-slate-500 block">Sleep Target</span>
-                      <span className="font-semibold text-slate-200">{healthProfile.lifestyleHabits?.sleepHours || 8} hrs/night</span>
+                      <span className="font-semibold text-slate-200">{healthProfile.sleepHours || 8} hrs/night</span>
                     </div>
                   </div>
                 </div>

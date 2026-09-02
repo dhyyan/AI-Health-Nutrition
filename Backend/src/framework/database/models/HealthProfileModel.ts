@@ -15,6 +15,8 @@ export interface IHealthProfileDocument extends Document {
   activityLevel: 'sedentary' | 'moderate' | 'active';
   sleepHours: number;
   dietaryPreference: string;
+  hasDiabetes: boolean;
+  diabetesStatus: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +41,8 @@ const HealthProfileSchema = new Schema<IHealthProfileDocument>(
     activityLevel: { type: String, enum: ['sedentary', 'moderate', 'active'], default: 'moderate' },
     sleepHours: { type: Number, default: 7 },
     dietaryPreference: { type: String, default: 'Non-Vegetarian' },
+    hasDiabetes: { type: Boolean, default: false },
+    diabetesStatus: { type: String, default: 'none' },
   },
   {
     timestamps: true,

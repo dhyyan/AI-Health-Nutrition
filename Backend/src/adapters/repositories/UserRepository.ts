@@ -16,6 +16,7 @@ export class UserRepository implements IUserRepository {
       resetPasswordOtp: doc.resetPasswordOtp,
       resetPasswordExpiresAt: doc.resetPasswordExpiresAt,
       status: doc.status,
+      profilePicture: doc.profilePicture,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -43,6 +44,7 @@ export class UserRepository implements IUserRepository {
       resetPasswordOtp: user.resetPasswordOtp,
       resetPasswordExpiresAt: user.resetPasswordExpiresAt,
       status: user.status,
+      profilePicture: user.profilePicture,
     });
     return this.mapToDomain(created);
   }
@@ -61,6 +63,7 @@ export class UserRepository implements IUserRepository {
         resetPasswordOtp: user.resetPasswordOtp,
         resetPasswordExpiresAt: user.resetPasswordExpiresAt,
         status: user.status,
+        profilePicture: user.profilePicture,
       },
       { new: true }
     );

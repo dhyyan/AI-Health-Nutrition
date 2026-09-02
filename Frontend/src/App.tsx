@@ -10,6 +10,11 @@ import { LoginPage } from './pages/auth/LoginPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { HealthProfilePageLayout } from './pages/profile/HealthProfilePageLayout';
+import { PersonalTab } from './pages/profile/tabs/PersonalTab';
+import { BMITab } from './pages/profile/tabs/BMITab';
+import { MedicalTab } from './pages/profile/tabs/MedicalTab';
+import { LifestyleTab } from './pages/profile/tabs/LifestyleTab';
 import { ProtectedRoute } from './routes/ProtectedRoute';
 import { PublicRoute } from './routes/PublicRoute';
 import { AdminRoute } from './routes/AdminRoute';
@@ -59,6 +64,13 @@ export const App: React.FC = () => {
             {/* Authenticated User Protected Routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/profile" element={<HealthProfilePageLayout />}>
+                <Route index element={<Navigate to="/profile/personal" replace />} />
+                <Route path="personal" element={<PersonalTab />} />
+                <Route path="bmi" element={<BMITab />} />
+                <Route path="medical" element={<MedicalTab />} />
+                <Route path="lifestyle" element={<LifestyleTab />} />
+              </Route>
             </Route>
 
             {/* Fallback */}

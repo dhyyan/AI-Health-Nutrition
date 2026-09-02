@@ -19,6 +19,8 @@ export interface HealthProfileProps {
   activityLevel?: ActivityLevel;
   sleepHours?: number;
   dietaryPreference?: string;
+  hasDiabetes?: boolean;
+  diabetesStatus?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -39,6 +41,8 @@ export class HealthProfile {
   public activityLevel: ActivityLevel;
   public sleepHours: number;
   public dietaryPreference: string;
+  public hasDiabetes: boolean;
+  public diabetesStatus: string;
   public createdAt?: Date;
   public updatedAt?: Date;
 
@@ -58,6 +62,8 @@ export class HealthProfile {
     this.activityLevel = props.activityLevel || 'moderate';
     this.sleepHours = props.sleepHours || 7;
     this.dietaryPreference = props.dietaryPreference || 'Non-Vegetarian';
+    this.hasDiabetes = props.hasDiabetes ?? false;
+    this.diabetesStatus = props.diabetesStatus || 'none';
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }

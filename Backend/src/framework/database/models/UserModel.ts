@@ -11,6 +11,7 @@ export interface IUserDocument extends Document {
   resetPasswordOtp?: string | null;
   resetPasswordExpiresAt?: Date | null;
   status: 'active' | 'blocked';
+  profilePicture?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,6 +28,7 @@ const UserSchema = new Schema<IUserDocument>(
     resetPasswordOtp: { type: String, default: null },
     resetPasswordExpiresAt: { type: Date, default: null },
     status: { type: String, enum: ['active', 'blocked'], default: 'active' },
+    profilePicture: { type: String, default: null },
   },
   {
     timestamps: true,

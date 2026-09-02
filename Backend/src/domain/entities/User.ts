@@ -13,6 +13,7 @@ export interface UserProps {
   resetPasswordOtp?: string | null;
   resetPasswordExpiresAt?: Date | null;
   status?: UserStatus;
+  profilePicture?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -29,6 +30,7 @@ export class User {
   public resetPasswordOtp: string | null;
   public resetPasswordExpiresAt: Date | null;
   public status: UserStatus;
+  public profilePicture: string | null;
   public createdAt?: Date;
   public updatedAt?: Date;
 
@@ -44,6 +46,7 @@ export class User {
     this.resetPasswordOtp = props.resetPasswordOtp || null;
     this.resetPasswordExpiresAt = props.resetPasswordExpiresAt || null;
     this.status = props.status || 'active';
+    this.profilePicture = props.profilePicture || null;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }
