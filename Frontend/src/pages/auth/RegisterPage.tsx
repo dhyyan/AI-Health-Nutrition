@@ -45,7 +45,7 @@ export const RegisterPage: React.FC = () => {
       const res = await authService.register(formData);
       setSuccess(res.message || 'Registration successful!');
       setTimeout(() => {
-        navigate('/verify-otp', { state: { email: formData.email } });
+        navigate('/verify-otp', { state: { email: formData.email, otp: res.data?.otp } });
       }, 1200);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to create account. Please check your inputs.');

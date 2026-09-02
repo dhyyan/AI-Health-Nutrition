@@ -9,7 +9,7 @@ export class ResendOTPUseCase {
     private emailService: IEmailService
   ) {}
 
-  async execute(dto: ResendOtpDTO): Promise<{ message: string }> {
+  async execute(dto: ResendOtpDTO): Promise<{ message: string; email: string; otp: string }> {
     const user = await this.userRepository.findByEmail(dto.email);
     if (!user) {
       throw new AppError('User account not found.', 404);
@@ -30,6 +30,8 @@ export class ResendOTPUseCase {
 
     return {
       message: 'A fresh verification OTP has been sent to your email address.',
+      email: user.email,
+      otp,
     };
   }
 }

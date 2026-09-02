@@ -9,10 +9,9 @@ export class ForgotPasswordUseCase {
     private emailService: IEmailService
   ) {}
 
-  async execute(dto: ForgotPasswordDTO): Promise<{ message: string }> {
+  async execute(dto: ForgotPasswordDTO): Promise<{ message: string; email?: string; otp?: string }> {
     const user = await this.userRepository.findByEmail(dto.email);
     if (!user) {
-      // Security best practice: do not reveal if email exists or not
       return {
         message: 'If an account with this email exists, a password reset code has been sent.',
       };
@@ -23,7 +22,7 @@ export class ForgotPasswordUseCase {
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const resetExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const resetExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     user.resetPasswordOtp = otp;
     user.resetPasswordExpiresAt = resetExpiresAt;
@@ -33,6 +32,8 @@ export class ForgotPasswordUseCase {
 
     return {
       message: 'Password reset OTP code has been sent to your email address.',
+      email: user.email,
+      otp,
     };
   }
 }

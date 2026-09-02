@@ -12,7 +12,7 @@ export class RegisterUserUseCase {
     private emailService: IEmailService
   ) {}
 
-  async execute(dto: RegisterUserDTO): Promise<{ message: string; email: string }> {
+  async execute(dto: RegisterUserDTO): Promise<{ message: string; email: string; otp: string }> {
     const existing = await this.userRepository.findByEmail(dto.email);
     if (existing) {
       if (existing.isVerified) {
@@ -20,7 +20,7 @@ export class RegisterUserUseCase {
       } else {
         // User exists but unverified: regenerate OTP and resend
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+        const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
         existing.passwordHash = await this.passwordService.hash(dto.password);
         existing.verificationOtp = otp;
@@ -32,13 +32,14 @@ export class RegisterUserUseCase {
         return {
           message: 'Account pending verification. A new verification OTP has been sent to your email.',
           email: existing.email,
+          otp,
         };
       }
     }
 
     const passwordHash = await this.passwordService.hash(dto.password);
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
     const newUser = new User({
       name: dto.name,
@@ -57,6 +58,7 @@ export class RegisterUserUseCase {
     return {
       message: 'Registration successful! Please check your email for the 6-digit verification code.',
       email: savedUser.email,
+      otp,
     };
   }
 }

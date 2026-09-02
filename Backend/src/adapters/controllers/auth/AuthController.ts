@@ -36,7 +36,7 @@ export class AuthController {
         res,
         statusCode: 201,
         message: result.message,
-        data: { email: result.email },
+        data: { email: result.email, otp: result.otp },
       });
     } catch (error) {
       next(error);
@@ -66,6 +66,7 @@ export class AuthController {
         res,
         statusCode: 200,
         message: result.message,
+        data: { email: result.email, otp: result.otp },
       });
     } catch (error) {
       next(error);
@@ -95,6 +96,7 @@ export class AuthController {
         res,
         statusCode: 200,
         message: result.message,
+        data: { email: result.email, otp: result.otp },
       });
     } catch (error) {
       next(error);

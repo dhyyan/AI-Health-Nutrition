@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, Mail, ArrowRight, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
+import { ShieldCheck, Mail, ArrowRight, AlertCircle, Loader2, RefreshCw, Sparkles, Terminal } from 'lucide-react';
 import { authService } from '../../services/auth.service';
 import { useAuth } from '../../context/AuthContext';
 
@@ -11,6 +11,7 @@ export const VerifyOtpPage: React.FC = () => {
 
   const [email, setEmail] = useState<string>(location.state?.email || '');
   const [otp, setOtp] = useState<string>('');
+  const [currentOtp, setCurrentOtp] = useState<string | null>(location.state?.otp || null);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,21 +38,25 @@ export const VerifyOtpPage: React.FC = () => {
       login(authData);
       navigate('/dashboard', { replace: true });
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid verification code.');
+      setError(err.response?.data?.message || 'Invalid verification code. Check your terminal output.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleResend = async () => {
-    if (!email || timer > 0) return;
+    if (!email || resending) return;
     setError(null);
     setInfo(null);
     setResending(true);
 
     try {
       const res = await authService.resendOtp(email);
-      setInfo(res.message || 'New OTP sent to your email.');
+      const newOtp = res.data?.otp;
+      if (newOtp) {
+        setCurrentOtp(newOtp);
+      }
+      setInfo(`Fresh OTP code dispatched to terminal for [ ${email} ]`);
       setTimer(60);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to resend OTP.');
@@ -60,27 +65,63 @@ export const VerifyOtpPage: React.FC = () => {
     }
   };
 
+  const handleAutoFill = () => {
+    if (currentOtp) {
+      setOtp(currentOtp);
+    }
+  };
+
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12 bg-slate-50">
-      <div className="w-full max-w-md bg-white rounded-3xl border border-slate-200/90 shadow-xl p-8">
-        <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-center mx-auto mb-3 text-sky-600">
-            <ShieldCheck className="w-6 h-6" />
+    <div className="min-h-[85vh] flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 bg-slate-50">
+      <div className="w-full max-w-md bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-xl p-6 sm:p-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-sky-50 border border-sky-200 flex items-center justify-center mx-auto mb-3 text-sky-600">
+            <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 font-outfit">Verify Email OTP</h2>
-          <p className="text-slate-500 text-sm mt-1">Enter the 6-digit code sent to your email</p>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-outfit">Verify Email OTP</h2>
+          <p className="text-slate-500 text-xs sm:text-sm mt-1">Enter the 6-digit code sent to your email</p>
         </div>
 
+        {/* Demo Helper Banner for viva presentation */}
+        {currentOtp && (
+          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-md relative overflow-hidden">
+            <div className="flex items-center justify-between text-xs text-slate-300 font-mono mb-2">
+              <span className="flex items-center gap-1 text-emerald-400">
+                <Terminal className="w-3.5 h-3.5" /> Backend Terminal Logger
+              </span>
+              <span className="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider font-bold">
+                Dev Mode
+              </span>
+            </div>
+            <div className="text-xs text-slate-300">
+              Account: <span className="font-semibold text-white">{email}</span>
+            </div>
+            <div className="mt-2 flex items-center justify-between">
+              <div className="text-xl font-bold font-mono tracking-widest text-emerald-400">
+                [ {currentOtp} ]
+              </div>
+              <button
+                type="button"
+                onClick={handleAutoFill}
+                className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Auto-fill Code
+              </button>
+            </div>
+          </div>
+        )}
+
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div className="mb-6 p-3.5 sm:p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
         {info && (
-          <div className="mb-6 p-4 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 text-sm flex items-start gap-3">
-            <ShieldCheck className="w-5 h-5 shrink-0 mt-0.5" />
+          <div className="mb-6 p-3.5 sm:p-4 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 text-xs sm:text-sm flex items-start gap-2.5">
+            <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 mt-0.5" />
             <span>{info}</span>
           </div>
         )}
@@ -121,7 +162,7 @@ export const VerifyOtpPage: React.FC = () => {
           <button
             type="submit"
             disabled={loading || otp.length !== 6}
-            className="w-full mt-2 btn-primary py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:scale-[1.01] disabled:opacity-50"
+            className="w-full mt-2 btn-primary py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 transition-all"
           >
             {loading ? (
               <>
@@ -142,14 +183,14 @@ export const VerifyOtpPage: React.FC = () => {
             type="button"
             onClick={handleResend}
             disabled={timer > 0 || resending}
-            className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 disabled:text-slate-400 inline-flex items-center gap-1.5"
+            className="text-sm font-semibold text-emerald-600 hover:text-emerald-700 disabled:text-slate-400 inline-flex items-center gap-1.5 cursor-pointer"
           >
             <RefreshCw className={`w-4 h-4 ${resending ? 'animate-spin' : ''}`} />
             {timer > 0 ? `Resend OTP in ${timer}s` : 'Resend OTP Code'}
           </button>
         </div>
 
-        <div className="mt-6 text-center text-sm text-slate-500">
+        <div className="mt-6 text-center text-xs sm:text-sm text-slate-500">
           Back to{' '}
           <Link to="/login" className="font-bold text-emerald-600 hover:text-emerald-700">
             Log In
