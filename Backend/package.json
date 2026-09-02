@@ -26,6 +26,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.1",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^9.1.1",
     "pdfkit": "^0.16.0",
     "zod": "^3.24.2"
   },
@@ -36,6 +37,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.13.4",
+    "@types/nodemailer": "^8.0.1",
     "@types/pdfkit": "^0.13.9",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"
