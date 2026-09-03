@@ -1,9 +1,15 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Activity, Flame, Droplet, Heart, Sparkles, User, ShieldCheck } from 'lucide-react';
+import { useWaterTracker } from '../hooks/useWaterTracker';
+import { Activity, Flame, Droplet, Heart, Sparkles, ShieldCheck, ArrowRight, Plus } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
+  const { summary, addIntake } = useWaterTracker();
+
+  const consumedLiters = ((summary?.totalConsumedMl || 0) / 1000).toFixed(1);
+  const goalLiters = ((summary?.dailyGoalMl || 2500) / 1000).toFixed(1);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 px-6 py-10 max-w-7xl mx-auto space-y-8">
@@ -45,13 +51,46 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-card flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600">
-            <Droplet className="w-6 h-6" />
+        {/* Dynamic Water Intake Card */}
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-card flex flex-col justify-between space-y-3 relative group">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 shrink-0">
+                <Droplet className="w-5 h-5 fill-current" />
+              </div>
+              <div>
+                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Water Intake</span>
+                <div className="text-xl font-bold text-slate-900 font-outfit">
+                  {consumedLiters} / {goalLiters} <span className="text-xs text-slate-500 font-normal">Liters</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => addIntake(250)}
+              className="p-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition text-xs font-bold flex items-center space-x-1"
+              title="Quick Add 250ml"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>250ml</span>
+            </button>
           </div>
-          <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Water Intake</span>
-            <div className="text-2xl font-bold text-slate-900 font-outfit">1.8 / 2.5 <span className="text-xs text-slate-500 font-normal">Liters</span></div>
+
+          {/* Progress Mini Bar & Link */}
+          <div className="space-y-1.5 pt-1 border-t border-slate-100">
+            <div className="flex justify-between items-center text-[11px] font-semibold">
+              <span className="text-slate-500">{summary?.progressPercentage || 0}% Completed</span>
+              <Link to="/water" className="text-sky-600 hover:text-sky-700 flex items-center space-x-1">
+                <span>Tracker</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-cyan-500 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(summary?.progressPercentage || 0, 100)}%` }}
+              />
+            </div>
           </div>
         </div>
 
@@ -89,12 +128,12 @@ export const DashboardPage: React.FC = () => {
             </p>
           </div>
         </div>
-        <a
-          href="/recommendations"
+        <Link
+          to="/recommendations"
           className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shrink-0 shadow-sm"
         >
           View All Recommendations →
-        </a>
+        </Link>
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ import userRoutes from './framework/routes/user.routes';
 import nutritionRoutes from './framework/routes/nutrition.routes';
 import recommendationRoutes from './framework/routes/recommendation.routes';
 import mealRoutes from './framework/routes/meal.routes';
+import waterRoutes from './framework/routes/water.routes';
+import notificationRoutes from './framework/routes/notification.routes';
 import { globalErrorHandler } from './adapters/middlewares/error.middleware';
 
 const app: Application = express();
@@ -28,6 +30,8 @@ app.use('/api/user', userRoutes);
 app.use('/api/nutrition', nutritionRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/meals', mealRoutes);
+app.use('/api/water', waterRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Global Error Middleware
 app.use(globalErrorHandler);

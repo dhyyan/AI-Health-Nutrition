@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Activity, Camera, PieChart, Droplet, User as UserIcon, ShieldAlert, LogOut, Menu, X, Sparkles, Utensils } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { NotificationCenter } from './NotificationCenter';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
@@ -28,7 +29,6 @@ export const Navbar: React.FC = () => {
   if (user?.role === 'admin') {
     navLinks.push({ path: '/admin/users', label: 'Admin Panel', icon: ShieldAlert, public: false });
   }
-
 
   return (
     <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 sm:px-6 py-3 flex items-center justify-between shadow-sm">
@@ -65,16 +65,20 @@ export const Navbar: React.FC = () => {
         })}
       </div>
 
-      {/* Desktop Auth Controls */}
+      {/* Desktop Auth Controls & Top Right Notification Center */}
       <div className="hidden lg:flex items-center space-x-3">
         {isAuthenticated && user ? (
           <div className="flex items-center space-x-3">
+            {/* Top Right Notification Bell Dropdown */}
+            <NotificationCenter />
+
             <div className="flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200">
               <div className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">
                 {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
               </div>
               <span className="text-xs font-semibold text-slate-800">{user.name}</span>
             </div>
+
             <button
               onClick={handleLogout}
               className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 transition-colors"
@@ -103,19 +107,21 @@ export const Navbar: React.FC = () => {
             >
               Get Started
             </Link>
-
           </>
         )}
       </div>
 
-      {/* Mobile Hamburger Toggle Button */}
-      <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden p-2.5 rounded-xl text-slate-700 hover:bg-slate-100 focus:outline-none border border-slate-200"
-        aria-label="Toggle navigation menu"
-      >
-        {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-      </button>
+      {/* Mobile Right Controls: Notification Bell & Hamburger Toggle */}
+      <div className="flex lg:hidden items-center space-x-2">
+        {isAuthenticated && <NotificationCenter />}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2.5 rounded-xl text-slate-700 hover:bg-slate-100 focus:outline-none border border-slate-200"
+          aria-label="Toggle navigation menu"
+        >
+          {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+      </div>
 
       {/* Mobile Navigation Overlay Drawer */}
       {isMobileMenuOpen && (

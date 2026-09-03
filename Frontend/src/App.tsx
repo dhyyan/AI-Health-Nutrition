@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
+import { ToastNotificationContainer } from './components/common/ToastNotificationContainer';
 import { Navbar } from './components/layout/Navbar';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { LandingPage } from './pages/LandingPage';
@@ -13,6 +15,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { NutritionPage } from './pages/nutrition/NutritionPage';
 import { RecommendationsPage } from './pages/recommendations/RecommendationsPage';
 import { MealPlannerPage } from './pages/meals/MealPlannerPage';
+import { WaterTrackerPage } from './pages/water/WaterTrackerPage';
 import { HealthProfilePageLayout } from './pages/profile/HealthProfilePageLayout';
 import { PersonalTab } from './pages/profile/tabs/PersonalTab';
 import { BMITab } from './pages/profile/tabs/BMITab';
@@ -38,54 +41,58 @@ const MainAppLayout: React.FC = () => (
 export const App: React.FC = () => {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Admin Login (Standalone) */}
-          <Route path="/admin/login" element={<AdminLoginPage />} />
+      <NotificationProvider>
+        <Router>
+          <ToastNotificationContainer />
+          <Routes>
+            {/* Admin Login (Standalone) */}
+            <Route path="/admin/login" element={<AdminLoginPage />} />
 
-          {/* Protected Admin Routes with Sidebar & Outlet */}
-          <Route element={<AdminRoute />}>
-            <Route element={<AdminLayout />}>
-              <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
-              <Route path="/admin/users" element={<AdminUsersPage />} />
-              <Route path="/admin/meals" element={<AdminMealsPage />} />
-              <Route path="/admin/dashboard" element={<AdminOverviewPage />} />
-            </Route>
-          </Route>
-
-          {/* Main Site Routes with Standard Top Navbar */}
-          <Route element={<MainAppLayout />}>
-            <Route path="/" element={<LandingPage />} />
-
-            {/* Guest Only Public Routes */}
-            <Route element={<PublicRoute />}>
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/verify-otp" element={<VerifyOtpPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
-            </Route>
-
-            {/* Authenticated User Protected Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/nutrition" element={<NutritionPage />} />
-              <Route path="/recommendations" element={<RecommendationsPage />} />
-              <Route path="/meals" element={<MealPlannerPage />} />
-              <Route path="/profile" element={<HealthProfilePageLayout />}>
-                <Route index element={<Navigate to="/profile/personal" replace />} />
-                <Route path="personal" element={<PersonalTab />} />
-                <Route path="bmi" element={<BMITab />} />
-                <Route path="medical" element={<MedicalTab />} />
-                <Route path="lifestyle" element={<LifestyleTab />} />
+            {/* Protected Admin Routes with Sidebar & Outlet */}
+            <Route element={<AdminRoute />}>
+              <Route element={<AdminLayout />}>
+                <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
+                <Route path="/admin/users" element={<AdminUsersPage />} />
+                <Route path="/admin/meals" element={<AdminMealsPage />} />
+                <Route path="/admin/dashboard" element={<AdminOverviewPage />} />
               </Route>
             </Route>
 
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
-        </Routes>
-      </Router>
+            {/* Main Site Routes with Standard Top Navbar */}
+            <Route element={<MainAppLayout />}>
+              <Route path="/" element={<LandingPage />} />
+
+              {/* Guest Only Public Routes */}
+              <Route element={<PublicRoute />}>
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/verify-otp" element={<VerifyOtpPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
+              </Route>
+
+              {/* Authenticated User Protected Routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/nutrition" element={<NutritionPage />} />
+                <Route path="/recommendations" element={<RecommendationsPage />} />
+                <Route path="/meals" element={<MealPlannerPage />} />
+                <Route path="/water" element={<WaterTrackerPage />} />
+                <Route path="/profile" element={<HealthProfilePageLayout />}>
+                  <Route index element={<Navigate to="/profile/personal" replace />} />
+                  <Route path="personal" element={<PersonalTab />} />
+                  <Route path="bmi" element={<BMITab />} />
+                  <Route path="medical" element={<MedicalTab />} />
+                  <Route path="lifestyle" element={<LifestyleTab />} />
+                </Route>
+              </Route>
+
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
+          </Routes>
+        </Router>
+      </NotificationProvider>
     </AuthProvider>
   );
 };
