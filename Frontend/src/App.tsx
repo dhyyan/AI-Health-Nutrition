@@ -17,6 +17,7 @@ import { RecommendationsPage } from './pages/recommendations/RecommendationsPage
 import { MealPlannerPage } from './pages/meals/MealPlannerPage';
 import { WaterTrackerPage } from './pages/water/WaterTrackerPage';
 import { HealthReportsPage } from './pages/reports/HealthReportsPage';
+import { FoodScannerPage } from './pages/scanner/FoodScannerPage';
 import { HealthProfilePageLayout } from './pages/profile/HealthProfilePageLayout';
 import { PersonalTab } from './pages/profile/tabs/PersonalTab';
 import { BMITab } from './pages/profile/tabs/BMITab';
@@ -75,6 +76,7 @@ export const App: React.FC = () => {
               {/* Authenticated User Protected Routes */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/scan" element={<FoodScannerPage />} />
                 <Route path="/nutrition" element={<NutritionPage />} />
                 <Route path="/recommendations" element={<RecommendationsPage />} />
                 <Route path="/meals" element={<MealPlannerPage />} />

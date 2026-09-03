@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import multer from 'multer';
 import { authenticateJwt } from '../../adapters/middlewares/auth.middleware';
 import { MongoFoodRepository } from '../../adapters/repositories/MongoFoodRepository';
 import { MongoFoodLogRepository } from '../../adapters/repositories/MongoFoodLogRepository';
@@ -11,7 +12,12 @@ import { GetUserFoodLogsUseCase } from '../../useCases/food/GetUserFoodLogsUseCa
 import { DeleteFoodLogUseCase } from '../../useCases/food/DeleteFoodLogUseCase';
 import { NutritionController } from '../../adapters/controllers/nutrition/NutritionController';
 
+import { GeminiFoodRecognitionService } from '../services/ai/GeminiFoodRecognitionService';
+import { ScanFoodImageUseCase } from '../../useCases/nutrition/ScanFoodImageUseCase';
+import { ScannerController } from '../../adapters/controllers/nutrition/ScannerController';
+
 const router = Router();
+const upload = multer({ limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit
 
 // Dependency Injection Setup
 const foodRepository = new MongoFoodRepository();
@@ -24,6 +30,10 @@ const analyzeNutritionUseCase = new AnalyzeNutritionUseCase(nutritionDatabaseSer
 const createFoodLogUseCase = new CreateFoodLogUseCase(foodLogRepository, nutritionDatabaseService);
 const getUserFoodLogsUseCase = new GetUserFoodLogsUseCase(foodLogRepository);
 const deleteFoodLogUseCase = new DeleteFoodLogUseCase(foodLogRepository);
+
+const geminiFoodRecognitionService = new GeminiFoodRecognitionService();
+const scanFoodImageUseCase = new ScanFoodImageUseCase(geminiFoodRecognitionService);
+const scannerController = new ScannerController(scanFoodImageUseCase);
 
 const nutritionController = new NutritionController(
   searchFoodUseCase,
@@ -43,5 +53,8 @@ router.post('/analyze', nutritionController.analyzeNutrition);
 router.post('/logs', nutritionController.createFoodLog);
 router.get('/logs', nutritionController.getUserFoodLogs);
 router.delete('/logs/:id', nutritionController.deleteFoodLog);
+
+// AI Food Scanner Endpoint
+router.post('/scan', upload.single('image'), scannerController.scanImage);
 
 export default router;

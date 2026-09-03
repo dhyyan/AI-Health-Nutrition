@@ -19,11 +19,15 @@ export class NotificationRepository implements INotificationRepository {
   }
 
   async create(dto: CreateNotificationDTO): Promise<AppNotification> {
+    const validUserId = mongoose.Types.ObjectId.isValid(dto.userId)
+      ? new mongoose.Types.ObjectId(dto.userId)
+      : new mongoose.Types.ObjectId();
+
     const created = await NotificationModel.create({
-      userId: new mongoose.Types.ObjectId(dto.userId),
+      userId: validUserId,
       title: dto.title,
       message: dto.message,
-      type: dto.type,
+      type: dto.type || 'system',
       actionUrl: dto.actionUrl || '',
       isRead: false,
     });

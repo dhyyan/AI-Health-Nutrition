@@ -61,6 +61,11 @@ export interface CreateFoodLogRequest {
   mealType: MealType;
   servingSize: number;
   servingUnit: string;
+  calories?: number;
+  protein?: number;
+  carbohydrates?: number;
+  fat?: number;
+  fiber?: number;
 }
 
 export interface FoodLogItem {
