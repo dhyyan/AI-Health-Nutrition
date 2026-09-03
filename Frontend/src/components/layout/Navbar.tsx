@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Activity, Camera, PieChart, Droplet, User as UserIcon, ShieldAlert, LogOut, Menu, X } from 'lucide-react';
+import { Activity, Camera, PieChart, Droplet, User as UserIcon, ShieldAlert, LogOut, Menu, X, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const Navbar: React.FC = () => {
@@ -19,6 +19,7 @@ export const Navbar: React.FC = () => {
     { path: '/dashboard', label: 'Dashboard', icon: Activity, public: false },
     { path: '/scan', label: 'AI Scanner', icon: Camera, public: false },
     { path: '/nutrition', label: 'Nutrition', icon: PieChart, public: false },
+    { path: '/recommendations', label: 'Recommendations', icon: Sparkles, public: false },
     { path: '/water', label: 'Hydration', icon: Droplet, public: false },
     { path: '/profile', label: 'Health Profile', icon: UserIcon, public: false },
   ];

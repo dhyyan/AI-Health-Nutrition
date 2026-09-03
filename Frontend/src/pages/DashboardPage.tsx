@@ -77,16 +77,24 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* AI Recommendation Banner */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-card flex items-start space-x-4">
-        <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
-          <Sparkles className="w-5 h-5" />
+      <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="flex items-start space-x-4">
+          <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="font-bold text-slate-900 font-outfit text-base">AI Personalized Recommendations</h3>
+            <p className="text-slate-600 text-sm mt-1">
+              Explore your customized Weight Loss, Weight Gain, Muscle Gain, Portion Guidance, and Health Profile comparisons.
+            </p>
+          </div>
         </div>
-        <div>
-          <h3 className="font-bold text-slate-900 font-outfit text-base">AI Personalized Tip of the Day</h3>
-          <p className="text-slate-600 text-sm mt-1">
-            Based on your hydration tracking, drink 500ml of water before your afternoon meal to optimize metabolic efficiency and energy levels.
-          </p>
-        </div>
+        <a
+          href="/recommendations"
+          className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shrink-0 shadow-sm"
+        >
+          View All Recommendations →
+        </a>
       </div>
     </div>
   );
