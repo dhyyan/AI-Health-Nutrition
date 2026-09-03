@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { UserRepository } from '../../adapters/repositories/UserRepository';
 import { HealthProfileRepository } from '../../adapters/repositories/HealthProfileRepository';
+import { WeightBmiLogRepository } from '../../adapters/repositories/WeightBmiLogRepository';
 import { LocalStorageService } from '../services/storage/LocalStorageService';
 import { GetHealthProfileUseCase } from '../../useCases/user/GetHealthProfileUseCase';
 import { UpdateHealthProfileUseCase } from '../../useCases/user/UpdateHealthProfileUseCase';
@@ -14,10 +15,11 @@ const router = Router();
 // Instantiate dependencies
 const userRepository = new UserRepository();
 const healthProfileRepository = new HealthProfileRepository();
+const weightBmiLogRepository = new WeightBmiLogRepository();
 const storageService = new LocalStorageService('profiles');
 
 const getHealthProfileUseCase = new GetHealthProfileUseCase(userRepository, healthProfileRepository);
-const updateHealthProfileUseCase = new UpdateHealthProfileUseCase(userRepository, healthProfileRepository);
+const updateHealthProfileUseCase = new UpdateHealthProfileUseCase(userRepository, healthProfileRepository, weightBmiLogRepository);
 const uploadProfilePictureUseCase = new UploadProfilePictureUseCase(userRepository, storageService);
 
 const healthProfileController = new HealthProfileController(

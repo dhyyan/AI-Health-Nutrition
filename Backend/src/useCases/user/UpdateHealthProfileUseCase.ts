@@ -1,12 +1,15 @@
 import { IUserRepository } from '../../domain/interfaces/repositories/IUserRepository';
 import { IHealthProfileRepository } from '../../domain/interfaces/repositories/IHealthProfileRepository';
+import { IWeightBmiLogRepository } from '../../domain/interfaces/repositories/IWeightBmiLogRepository';
 import { HealthProfile } from '../../domain/entities/HealthProfile';
+import { WeightBmiLog } from '../../domain/entities/WeightBmiLog';
 import { UpdateHealthProfileDTO, HealthProfileResponseDTO } from '../../domain/interfaces/DTOs/HealthProfileDTOs';
 
 export class UpdateHealthProfileUseCase {
   constructor(
     private userRepository: IUserRepository,
-    private healthProfileRepository: IHealthProfileRepository
+    private healthProfileRepository: IHealthProfileRepository,
+    private weightBmiLogRepository?: IWeightBmiLogRepository
   ) {}
 
   async execute(userId: string, dto: UpdateHealthProfileDTO): Promise<HealthProfileResponseDTO> {
@@ -56,6 +59,21 @@ export class UpdateHealthProfileUseCase {
     });
 
     const updatedProfile = await this.healthProfileRepository.upsert(profileDomain);
+
+    // Auto-log weight and BMI history snapshot for current date
+    if (this.weightBmiLogRepository) {
+      const todayDate = new Date().toISOString().split('T')[0];
+      await this.weightBmiLogRepository.createOrUpdateLog(
+        new WeightBmiLog({
+          userId,
+          weightKg: Number(dto.weightKg),
+          heightCm: Number(dto.heightCm),
+          bmi,
+          bmiCategory,
+          date: todayDate,
+        })
+      );
+    }
 
     return {
       user: {
