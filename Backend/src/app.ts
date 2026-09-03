@@ -7,6 +7,7 @@ import adminRoutes from './framework/routes/admin.routes';
 import userRoutes from './framework/routes/user.routes';
 import nutritionRoutes from './framework/routes/nutrition.routes';
 import recommendationRoutes from './framework/routes/recommendation.routes';
+import mealRoutes from './framework/routes/meal.routes';
 import { globalErrorHandler } from './adapters/middlewares/error.middleware';
 
 const app: Application = express();
@@ -26,6 +27,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/nutrition', nutritionRoutes);
 app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/meals', mealRoutes);
 
 // Global Error Middleware
 app.use(globalErrorHandler);

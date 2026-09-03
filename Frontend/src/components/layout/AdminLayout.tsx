@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Activity,
   Bell,
+  UtensilsCrossed,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -30,6 +31,12 @@ export const AdminLayout: React.FC = () => {
       label: 'User Management',
       icon: Users,
       description: 'Manage users & health profiles',
+    },
+    {
+      path: '/admin/meals',
+      label: 'Meal Management',
+      icon: UtensilsCrossed,
+      description: 'Master meals, recipes & allergens',
     },
     {
       path: '/admin/dashboard',

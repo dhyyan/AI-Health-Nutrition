@@ -12,6 +12,7 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { NutritionPage } from './pages/nutrition/NutritionPage';
 import { RecommendationsPage } from './pages/recommendations/RecommendationsPage';
+import { MealPlannerPage } from './pages/meals/MealPlannerPage';
 import { HealthProfilePageLayout } from './pages/profile/HealthProfilePageLayout';
 import { PersonalTab } from './pages/profile/tabs/PersonalTab';
 import { BMITab } from './pages/profile/tabs/BMITab';
@@ -23,6 +24,7 @@ import { AdminRoute } from './routes/AdminRoute';
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminOverviewPage } from './pages/admin/AdminOverviewPage';
+import { AdminMealsPage } from './pages/admin/AdminMealsPage';
 
 const MainAppLayout: React.FC = () => (
   <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
@@ -46,6 +48,7 @@ export const App: React.FC = () => {
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />
+              <Route path="/admin/meals" element={<AdminMealsPage />} />
               <Route path="/admin/dashboard" element={<AdminOverviewPage />} />
             </Route>
           </Route>
@@ -68,6 +71,7 @@ export const App: React.FC = () => {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/nutrition" element={<NutritionPage />} />
               <Route path="/recommendations" element={<RecommendationsPage />} />
+              <Route path="/meals" element={<MealPlannerPage />} />
               <Route path="/profile" element={<HealthProfilePageLayout />}>
                 <Route index element={<Navigate to="/profile/personal" replace />} />
                 <Route path="personal" element={<PersonalTab />} />

@@ -2,6 +2,7 @@ import app from './app';
 import { CONFIG } from './shared/constants/config';
 import { connectDatabase } from './framework/database/connection';
 import { seedInitialAdminAndUsers } from './framework/database/seed/seedAdmin';
+import { seedMeals } from './framework/database/seed/seedMeals';
 
 const startServer = async () => {
   await connectDatabase();
@@ -10,6 +11,7 @@ const startServer = async () => {
     console.log(`🚀 Server running in ${CONFIG.NODE_ENV} mode on port ${CONFIG.PORT}`);
     console.log(`🔗 Health Check: http://localhost:${CONFIG.PORT}/api/health`);
     seedInitialAdminAndUsers().catch((err) => console.error('Seeding error:', err));
+    seedMeals().catch((err) => console.error('Meal Seeding error:', err));
   });
 
 
