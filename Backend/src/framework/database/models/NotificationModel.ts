@@ -20,7 +20,15 @@ const NotificationSchema: Schema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ['water_reminder', 'meal_reminder', 'health_alert', 'system'],
+      enum: [
+        'water_reminder',
+        'meal_reminder',
+        'exercise_reminder',
+        'sleep_reminder',
+        'health_tip',
+        'health_alert',
+        'system',
+      ],
       default: 'system',
       index: true,
     },

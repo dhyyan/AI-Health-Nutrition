@@ -11,6 +11,7 @@ import mealRoutes from './framework/routes/meal.routes';
 import waterRoutes from './framework/routes/water.routes';
 import notificationRoutes from './framework/routes/notification.routes';
 import reportRoutes from './framework/routes/report.routes';
+import reminderRoutes from './framework/routes/reminder.routes';
 import { globalErrorHandler } from './adapters/middlewares/error.middleware';
 
 const app: Application = express();
@@ -34,6 +35,7 @@ app.use('/api/meals', mealRoutes);
 app.use('/api/water', waterRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/reminders', reminderRoutes);
 
 // Global Error Middleware
 app.use(globalErrorHandler);

@@ -2,17 +2,23 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useWaterTracker } from '../hooks/useWaterTracker';
+import { useReminders } from '../hooks/useReminders';
+import { DailyTipBanner } from '../components/notifications/DailyTipBanner';
 import { Activity, Flame, Droplet, Heart, Sparkles, ShieldCheck, ArrowRight, Plus } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
   const { summary, addIntake } = useWaterTracker();
+  const { dailyTip, fetchTip } = useReminders();
 
   const consumedLiters = ((summary?.totalConsumedMl || 0) / 1000).toFixed(1);
   const goalLiters = ((summary?.dailyGoalMl || 2500) / 1000).toFixed(1);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 px-6 py-10 max-w-7xl mx-auto space-y-8">
+      {/* Daily Health Tip Banner Widget */}
+      <DailyTipBanner tip={dailyTip} onRefresh={() => fetchTip()} />
+
       {/* User Welcome Banner */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
         <div className="relative z-10">

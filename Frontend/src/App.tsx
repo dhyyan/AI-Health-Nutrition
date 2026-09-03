@@ -16,6 +16,7 @@ import { NutritionPage } from './pages/nutrition/NutritionPage';
 import { RecommendationsPage } from './pages/recommendations/RecommendationsPage';
 import { MealPlannerPage } from './pages/meals/MealPlannerPage';
 import { WaterTrackerPage } from './pages/water/WaterTrackerPage';
+import { SmartNotificationsPage } from './pages/notifications/SmartNotificationsPage';
 import { HealthReportsPage } from './pages/reports/HealthReportsPage';
 import { FoodScannerPage } from './pages/scanner/FoodScannerPage';
 import { HealthProfilePageLayout } from './pages/profile/HealthProfilePageLayout';
@@ -81,6 +82,7 @@ export const App: React.FC = () => {
                 <Route path="/recommendations" element={<RecommendationsPage />} />
                 <Route path="/meals" element={<MealPlannerPage />} />
                 <Route path="/water" element={<WaterTrackerPage />} />
+                <Route path="/reminders" element={<SmartNotificationsPage />} />
                 <Route path="/reports" element={<HealthReportsPage />} />
                 <Route path="/profile" element={<HealthProfilePageLayout />}>
                   <Route index element={<Navigate to="/profile/personal" replace />} />

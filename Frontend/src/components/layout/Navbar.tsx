@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Activity, Camera, PieChart, Droplet, User as UserIcon, ShieldAlert, LogOut, Menu, X, Sparkles, Utensils, FileBarChart } from 'lucide-react';
+import { Activity, Camera, PieChart, Droplet, User as UserIcon, ShieldAlert, LogOut, Menu, X, Sparkles, Utensils, FileBarChart, Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { NotificationCenter } from './NotificationCenter';
 
@@ -23,6 +23,7 @@ export const Navbar: React.FC = () => {
     { path: '/recommendations', label: 'Recommendations', icon: Sparkles, public: false },
     { path: '/meals', label: 'Meal Planner', icon: Utensils, public: false },
     { path: '/water', label: 'Hydration', icon: Droplet, public: false },
+    { path: '/reminders', label: 'Reminders', icon: Bell, public: false },
     { path: '/reports', label: 'Health Reports', icon: FileBarChart, public: false },
     { path: '/profile', label: 'Health Profile', icon: UserIcon, public: false },
   ];
