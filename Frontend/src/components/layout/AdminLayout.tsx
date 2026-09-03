@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate, Link } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, Link, useLocation } from 'react-router-dom';
 import {
   Users,
   LayoutDashboard,
@@ -12,11 +12,13 @@ import {
   Activity,
   Bell,
   UtensilsCrossed,
+  BookOpen,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const AdminLayout: React.FC = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -37,6 +39,12 @@ export const AdminLayout: React.FC = () => {
       label: 'Meal Management',
       icon: UtensilsCrossed,
       description: 'Master meals, recipes & allergens',
+    },
+    {
+      path: '/admin/education',
+      label: 'Health Education',
+      icon: BookOpen,
+      description: 'Articles, exercise guides & FAQs',
     },
     {
       path: '/admin/dashboard',

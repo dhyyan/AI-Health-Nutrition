@@ -4,6 +4,7 @@ import { connectDatabase } from './framework/database/connection';
 import { seedInitialAdminAndUsers } from './framework/database/seed/seedAdmin';
 import { seedMeals } from './framework/database/seed/seedMeals';
 import { seedDailyTips } from './framework/database/seed/seedDailyTips';
+import { seedEducation } from './framework/database/seed/seedEducation';
 import { reminderScheduler } from './framework/services/reminderScheduler';
 
 const startServer = async () => {
@@ -15,6 +16,7 @@ const startServer = async () => {
     seedInitialAdminAndUsers().catch((err) => console.error('Seeding error:', err));
     seedMeals().catch((err) => console.error('Meal Seeding error:', err));
     seedDailyTips().catch((err) => console.error('Daily Tips Seeding error:', err));
+    seedEducation().catch((err) => console.error('Education Seeding error:', err));
     reminderScheduler.startScheduler();
   });
 

@@ -31,6 +31,8 @@ import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminOverviewPage } from './pages/admin/AdminOverviewPage';
 import { AdminMealsPage } from './pages/admin/AdminMealsPage';
+import { AdminEducationPage } from './pages/admin/AdminEducationPage';
+import { HealthEducationPage } from './pages/education/HealthEducationPage';
 
 const MainAppLayout: React.FC = () => (
   <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
@@ -57,6 +59,7 @@ export const App: React.FC = () => {
                 <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
                 <Route path="/admin/users" element={<AdminUsersPage />} />
                 <Route path="/admin/meals" element={<AdminMealsPage />} />
+                <Route path="/admin/education" element={<AdminEducationPage />} />
                 <Route path="/admin/dashboard" element={<AdminOverviewPage />} />
               </Route>
             </Route>
@@ -81,6 +84,7 @@ export const App: React.FC = () => {
                 <Route path="/nutrition" element={<NutritionPage />} />
                 <Route path="/recommendations" element={<RecommendationsPage />} />
                 <Route path="/meals" element={<MealPlannerPage />} />
+                <Route path="/education" element={<HealthEducationPage />} />
                 <Route path="/water" element={<WaterTrackerPage />} />
                 <Route path="/reminders" element={<SmartNotificationsPage />} />
                 <Route path="/reports" element={<HealthReportsPage />} />
