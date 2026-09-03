@@ -85,13 +85,13 @@ export const FoodScannerPage: React.FC = () => {
       <div className="text-center mb-8 space-y-2">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-black uppercase tracking-wider">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Google Gemini Vision AI</span>
+          <span>AI Nutrition Engine</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black font-outfit text-slate-900 tracking-tight">
-          AI Instant Food & Meal Scanner
+          AI Food Scanner & Nutrition Engine
         </h1>
-        <p className="text-sm text-slate-500 max-w-lg mx-auto font-medium">
-          Snap or upload any meal photo. AI detects food, evaluates healthy vs. unhealthy classification, and estimates complete macronutrients.
+        <p className="text-sm text-slate-500 max-w-xl mx-auto font-medium">
+          Food Recognition • Nutrition Database Lookup • User Profile & Allergy Matching • Suitability Scoring • Healthier Alternatives • Portion Advice • AI Recommendations
         </p>
       </div>
 

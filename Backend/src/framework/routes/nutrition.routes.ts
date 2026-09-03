@@ -16,12 +16,15 @@ import { GeminiFoodRecognitionService } from '../services/ai/GeminiFoodRecogniti
 import { ScanFoodImageUseCase } from '../../useCases/nutrition/ScanFoodImageUseCase';
 import { ScannerController } from '../../adapters/controllers/nutrition/ScannerController';
 
+import { HealthProfileRepository } from '../../adapters/repositories/HealthProfileRepository';
+
 const router = Router();
 const upload = multer({ limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit
 
 // Dependency Injection Setup
 const foodRepository = new MongoFoodRepository();
 const foodLogRepository = new MongoFoodLogRepository();
+const healthProfileRepository = new HealthProfileRepository();
 const nutritionDatabaseService = new NutritionDatabaseService(foodRepository);
 
 const searchFoodUseCase = new SearchFoodUseCase(nutritionDatabaseService);
@@ -32,7 +35,11 @@ const getUserFoodLogsUseCase = new GetUserFoodLogsUseCase(foodLogRepository);
 const deleteFoodLogUseCase = new DeleteFoodLogUseCase(foodLogRepository);
 
 const geminiFoodRecognitionService = new GeminiFoodRecognitionService();
-const scanFoodImageUseCase = new ScanFoodImageUseCase(geminiFoodRecognitionService);
+const scanFoodImageUseCase = new ScanFoodImageUseCase(
+  geminiFoodRecognitionService,
+  nutritionDatabaseService,
+  healthProfileRepository
+);
 const scannerController = new ScannerController(scanFoodImageUseCase);
 
 const nutritionController = new NutritionController(

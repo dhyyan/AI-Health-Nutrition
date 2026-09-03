@@ -33,7 +33,8 @@ export class ScannerController {
         });
       }
 
-      const result = await this.scanFoodImageUseCase.execute(buffer, mimeType, filename);
+      const userId = req.user?.userId;
+      const result = await this.scanFoodImageUseCase.execute(buffer, mimeType, filename, userId);
 
       return sendResponse({
         res,

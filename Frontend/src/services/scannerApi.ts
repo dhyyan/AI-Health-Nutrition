@@ -1,5 +1,26 @@
 import api from './api';
 
+export interface FoodAlternativeComparisonItem {
+  name: string;
+  calories: number;
+  protein: number;
+  carbohydrates: number;
+  fat: number;
+  sugar?: number;
+  sodium?: number;
+  servingSize?: number;
+  servingUnit?: string;
+}
+
+export interface FoodAlternativeComparisonData {
+  originalFood: FoodAlternativeComparisonItem;
+  alternativeFood: FoodAlternativeComparisonItem;
+  reason: string;
+  calorieSavings: number;
+  proteinDifference: number;
+  healthBenefit: string;
+}
+
 export interface ScanResultData {
   foodName: string;
   confidence: number;
@@ -17,6 +38,46 @@ export interface ScanResultData {
   healthTips: string[];
   isHealthy: boolean;
   imageUrl?: string;
+
+  // AI Nutrition Engine 7-Step Output
+  nutritionLookup?: {
+    verifiedMatch: boolean;
+    source: 'database' | 'ai_estimate';
+    dbFoodId?: string;
+    category?: string;
+    sugar?: number;
+    sodium?: number;
+    vitamins?: string[];
+    minerals?: string[];
+  };
+  profileMatching?: {
+    goal: string;
+    userAllergies: string[];
+    medicalHistory?: string[];
+    isDiabetic: boolean;
+    dailyCalorieTarget: number;
+  };
+  suitability?: {
+    rating: 'highly_suitable' | 'moderate' | 'unsuitable';
+    score: number;
+    reasoning: string;
+    hasAllergenAlert: boolean;
+    allergenAlerts: string[];
+    medicalAlerts: string[];
+  };
+  healthierAlternatives?: FoodAlternativeComparisonData[];
+  portionAdvice?: {
+    recommendedServingMultiplier: number;
+    servingAdviceText: string;
+    handVisualGuide: {
+      protein: string;
+      veggies: string;
+      carbs: string;
+      fats: string;
+    };
+  };
+  recommendationSummary?: string;
+  disclaimer?: string;
 }
 
 export const scannerApi = {
