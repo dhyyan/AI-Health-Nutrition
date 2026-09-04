@@ -78,3 +78,82 @@ export interface PdfReportOptionsDTO {
   startDate?: string;
   endDate?: string;
 }
+
+export interface HealthScoreBreakdown {
+  totalScore: number; // 0 - 100
+  statusLabel: string; // "Excellent" | "Good" | "Fair" | "Needs Attention"
+  nutritionScore: number; // max 35
+  waterScore: number; // max 25
+  bmiScore: number; // max 25
+  consistencyScore: number; // max 15
+}
+
+export interface MacroItemSummary {
+  consumed: number;
+  target: number;
+  unit: string;
+  percentage: number;
+}
+
+export interface MacroNutrientSummary {
+  calories: MacroItemSummary & { remaining: number };
+  protein: MacroItemSummary;
+  carbohydrates: MacroItemSummary;
+  fat: MacroItemSummary;
+  fiber: MacroItemSummary;
+  macroPercentages: {
+    proteinRatio: number; // e.g. 25% of energy
+    carbsRatio: number; // e.g. 50% of energy
+    fatRatio: number; // e.g. 25% of energy
+  };
+}
+
+export interface DashboardRecommendationItem {
+  id: string;
+  category: 'nutrition' | 'water' | 'activity' | 'lifestyle';
+  title: string;
+  suggestion: string;
+  tag: string;
+  impactLevel: 'high' | 'medium' | 'general';
+}
+
+export interface UserDashboardDTO {
+  date: string;
+  userProfile: {
+    name: string;
+    email: string;
+    avatarUrl?: string;
+    goal: string;
+    weightKg: number;
+    heightCm: number;
+    bmi: number;
+    bmiCategory: string;
+    idealWeightRange: string;
+  };
+  dailySummary: {
+    caloriesConsumed: number;
+    caloriesTarget: number;
+    caloriesRemaining: number;
+    waterConsumedMl: number;
+    waterGoalMl: number;
+    waterProgressPercentage: number;
+  };
+  healthScore: HealthScoreBreakdown;
+  macros: MacroNutrientSummary;
+  aiRecommendations: DashboardRecommendationItem[];
+  recentFoodHistory: Array<{
+    id: string;
+    foodName: string;
+    mealType: string;
+    servingSize: number;
+    servingUnit: string;
+    calories: number;
+    protein: number;
+    carbohydrates: number;
+    fat: number;
+    isAiScanned?: boolean;
+    createdAt?: Date | string;
+  }>;
+  disclaimer: string;
+}
+

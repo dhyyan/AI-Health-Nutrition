@@ -31,7 +31,7 @@ export const HealthReportsPage: React.FC = () => {
   const [isWeightModalOpen, setIsWeightModalOpen] = useState(false);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-[1680px] mx-auto px-6 sm:px-10 lg:px-16 py-8 space-y-10">
       {/* Header Controls */}
       <ReportHeader
         activeTab={activeTab}
@@ -48,8 +48,8 @@ export const HealthReportsPage: React.FC = () => {
 
       {/* Error Alert */}
       {error && (
-        <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-sm flex items-center space-x-3">
-          <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
+        <div className="mb-6 p-5 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-sm sm:text-base font-bold flex items-center space-x-3">
+          <AlertCircle className="w-6 h-6 text-rose-500 shrink-0" />
           <span>{error}</span>
         </div>
       )}

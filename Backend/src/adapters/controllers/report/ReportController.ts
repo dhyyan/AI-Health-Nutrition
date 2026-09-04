@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AuthenticatedRequest } from '../../middlewares/auth.middleware';
 import { sendResponse } from '../../../shared/utils/apiResponse';
 import { GetDailyReportUseCase } from '../../../useCases/report/GetDailyReportUseCase';
+import { GetUserDashboardUseCase } from '../../../useCases/report/GetUserDashboardUseCase';
 import { GetWeeklyReportUseCase } from '../../../useCases/report/GetWeeklyReportUseCase';
 import { GetMonthlyReportUseCase } from '../../../useCases/report/GetMonthlyReportUseCase';
 import { GetHealthTrendsUseCase } from '../../../useCases/report/GetHealthTrendsUseCase';
@@ -15,8 +16,38 @@ export class ReportController {
     private getMonthlyReportUseCase: GetMonthlyReportUseCase,
     private getHealthTrendsUseCase: GetHealthTrendsUseCase,
     private logWeightBmiUseCase: LogWeightBmiUseCase,
-    private generatePdfReportUseCase: GeneratePdfReportUseCase
+    private generatePdfReportUseCase: GeneratePdfReportUseCase,
+    private getUserDashboardUseCase?: GetUserDashboardUseCase
   ) {}
+
+  getDashboard = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
+    try {
+      const userId = req.user?.userId;
+      if (!userId) {
+        return sendResponse({ res, statusCode: 401, message: 'Unauthorized' });
+      }
+
+      if (!this.getUserDashboardUseCase) {
+        return sendResponse({ res, statusCode: 500, message: 'User Dashboard UseCase not injected' });
+      }
+
+      const dateStr = req.query.date as string | undefined;
+      const dashboard = await this.getUserDashboardUseCase.execute(userId, dateStr);
+
+      return sendResponse({
+        res,
+        statusCode: 200,
+        message: 'User dashboard fetched successfully',
+        data: dashboard,
+      });
+    } catch (error: any) {
+      return sendResponse({
+        res,
+        statusCode: 400,
+        message: error.message || 'Failed to fetch user dashboard',
+      });
+    }
+  };
 
   getDailyReport = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
     try {

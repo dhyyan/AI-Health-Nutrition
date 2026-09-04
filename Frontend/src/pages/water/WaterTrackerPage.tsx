@@ -93,39 +93,39 @@ export const WaterTrackerPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 px-4 sm:px-6 py-8 max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-slate-50 text-slate-900 px-6 sm:px-10 lg:px-16 py-8 max-w-[1680px] mx-auto space-y-10">
       {/* Top Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-        <div>
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-100 text-cyan-800 text-xs font-bold mb-2">
-            <Droplet className="w-3.5 h-3.5 fill-current" />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-8">
+        <div className="space-y-2">
+          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-cyan-100 text-cyan-800 text-xs sm:text-sm font-extrabold mb-1">
+            <Droplet className="w-4 h-4 fill-current" />
             <span>Water Intake Tracker</span>
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 font-outfit tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 font-outfit tracking-tight">
             Daily Hydration & Reminders
           </h1>
-          <p className="text-slate-500 text-sm mt-1 max-w-2xl">
+          <p className="text-slate-600 text-sm sm:text-base mt-1.5 max-w-3xl leading-relaxed font-medium">
             Maintain optimal bodily function, energy levels, and mental clarity by tracking your daily water goal.
           </p>
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3.5 shrink-0">
           <button
             onClick={() => {
               setNewGoalInput(summary?.dailyGoalMl.toString() || '2500');
               setIsGoalModalOpen(true);
             }}
-            className="inline-flex items-center space-x-2 px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 shadow-sm transition"
+            className="inline-flex items-center space-x-2 px-5 py-3 bg-white hover:bg-slate-100 text-slate-800 text-sm font-extrabold rounded-xl border border-slate-200 shadow-sm transition"
           >
-            <Target className="w-4 h-4 text-cyan-600" />
+            <Target className="w-4.5 h-4.5 text-cyan-600" />
             <span>Adjust Target Goal</span>
           </button>
           <button
             onClick={() => fetchSummary()}
-            className="p-2.5 bg-white hover:bg-slate-100 text-slate-600 rounded-xl border border-slate-200 shadow-sm transition"
+            className="p-3 bg-white hover:bg-slate-100 text-slate-700 rounded-xl border border-slate-200 shadow-sm transition"
             title="Refresh Data"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="w-5 h-5" />
           </button>
         </div>
       </div>

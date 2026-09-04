@@ -12,6 +12,8 @@ import { GetMonthlyReportUseCase } from '../../useCases/report/GetMonthlyReportU
 import { GetHealthTrendsUseCase } from '../../useCases/report/GetHealthTrendsUseCase';
 import { LogWeightBmiUseCase } from '../../useCases/report/LogWeightBmiUseCase';
 import { GeneratePdfReportUseCase } from '../../useCases/report/GeneratePdfReportUseCase';
+import { GetUserDashboardUseCase } from '../../useCases/report/GetUserDashboardUseCase';
+import { GeneratePersonalizedRecommendationsUseCase } from '../../useCases/recommendation/GeneratePersonalizedRecommendationsUseCase';
 
 import { ReportController } from '../../adapters/controllers/report/ReportController';
 
@@ -25,6 +27,20 @@ const weightBmiLogRepository = new WeightBmiLogRepository();
 const userRepository = new UserRepository();
 
 // Instantiate Use Cases
+const generateRecommendationsUseCase = new GeneratePersonalizedRecommendationsUseCase(
+  healthProfileRepository,
+  foodLogRepository
+);
+
+const getUserDashboardUseCase = new GetUserDashboardUseCase(
+  userRepository,
+  healthProfileRepository,
+  foodLogRepository,
+  waterIntakeRepository,
+  weightBmiLogRepository,
+  generateRecommendationsUseCase
+);
+
 const getDailyReportUseCase = new GetDailyReportUseCase(
   foodLogRepository,
   waterIntakeRepository,
@@ -71,12 +87,14 @@ const reportController = new ReportController(
   getMonthlyReportUseCase,
   getHealthTrendsUseCase,
   logWeightBmiUseCase,
-  generatePdfReportUseCase
+  generatePdfReportUseCase,
+  getUserDashboardUseCase
 );
 
 // All routes protected by JWT
 router.use(authenticateJwt);
 
+router.get('/dashboard', reportController.getDashboard);
 router.get('/daily', reportController.getDailyReport);
 router.get('/weekly', reportController.getWeeklyReport);
 router.get('/monthly', reportController.getMonthlyReport);

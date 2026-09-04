@@ -60,6 +60,17 @@ export class MongoFoodLogRepository implements IFoodLogRepository {
     return docs.map((doc) => this.mapDocumentToEntity(doc));
   }
 
+  async findByUserId(userId: string, limit: number = 10): Promise<FoodLog[]> {
+    const docs = await FoodLogModel.find({
+      userId: new mongoose.Types.ObjectId(userId),
+    })
+      .sort({ loggedAt: -1 })
+      .limit(limit)
+      .exec();
+
+    return docs.map((doc) => this.mapDocumentToEntity(doc));
+  }
+
   async findById(id: string): Promise<FoodLog | null> {
     const doc = await FoodLogModel.findById(id).exec();
     if (!doc) return null;

@@ -1,146 +1,139 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useWaterTracker } from '../hooks/useWaterTracker';
+import { useDashboard } from '../hooks/useDashboard';
 import { useReminders } from '../hooks/useReminders';
 import { DailyTipBanner } from '../components/notifications/DailyTipBanner';
-import { Activity, Flame, Droplet, Heart, Sparkles, ShieldCheck, ArrowRight, Plus } from 'lucide-react';
+import { DailyHealthSummaryHeader } from '../components/dashboard/DailyHealthSummaryHeader';
+import { DailyCalorieCard } from '../components/dashboard/DailyCalorieCard';
+import { WaterIntakeCard } from '../components/dashboard/WaterIntakeCard';
+import { BmiStatusCard } from '../components/dashboard/BmiStatusCard';
+import { HealthScoreCard } from '../components/dashboard/HealthScoreCard';
+import { NutritionSummarySection } from '../components/dashboard/NutritionSummarySection';
+import { AiRecommendationsSection } from '../components/dashboard/AiRecommendationsSection';
+import { RecentFoodHistorySection } from '../components/dashboard/RecentFoodHistorySection';
+import { MedicalDisclaimerBanner } from '../components/dashboard/MedicalDisclaimerBanner';
+import { AlertCircle } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
   const { user } = useAuth();
-  const { summary, addIntake } = useWaterTracker();
+  const {
+    selectedDate,
+    setSelectedDate,
+    dashboardData,
+    loading,
+    error,
+    isWaterUpdating,
+    refreshDashboard,
+    addQuickWater,
+  } = useDashboard();
   const { dailyTip, fetchTip } = useReminders();
 
-  const consumedLiters = ((summary?.totalConsumedMl || 0) / 1000).toFixed(1);
-  const goalLiters = ((summary?.dailyGoalMl || 2500) / 1000).toFixed(1);
+  // Date Navigation Handlers
+  const handlePrevDay = () => {
+    const d = new Date(selectedDate);
+    d.setDate(d.getDate() - 1);
+    setSelectedDate(d.toISOString().split('T')[0]);
+  };
+
+  const handleNextDay = () => {
+    const d = new Date(selectedDate);
+    d.setDate(d.getDate() + 1);
+    setSelectedDate(d.toISOString().split('T')[0]);
+  };
+
+  const handleToday = () => {
+    setSelectedDate(new Date().toISOString().split('T')[0]);
+  };
+
+  const isToday = selectedDate === new Date().toISOString().split('T')[0];
+
+  const profile = dashboardData?.userProfile;
+  const summary = dashboardData?.dailySummary;
+  const healthScore = dashboardData?.healthScore;
+  const macros = dashboardData?.macros;
+  const recommendations = dashboardData?.aiRecommendations || [];
+  const foodHistory = dashboardData?.recentFoodHistory || [];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 px-6 py-10 max-w-7xl mx-auto space-y-8">
-      {/* Daily Health Tip Banner Widget */}
+    <div className="min-h-screen bg-slate-50 text-slate-900 px-6 sm:px-10 lg:px-16 py-8 w-full max-w-[1680px] mx-auto space-y-8">
+      {/* Daily Smart Health Tip Banner */}
       <DailyTipBanner tip={dailyTip} onRefresh={() => fetchTip()} />
 
-      {/* User Welcome Banner */}
-      <div className="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-8 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
-        <div className="relative z-10">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold mb-3 text-emerald-100">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Authenticated User • Role: {user?.role}</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold font-outfit">
-            Welcome back, {user?.name || 'Health Enthusiast'}! 👋
-          </h1>
-          <p className="mt-2 text-emerald-100 text-sm md:text-base max-w-xl">
-            Here is your daily personalized health overview. Track your calorie intake, hydration goals, and AI nutrition recommendations.
-          </p>
+      {/* 1. Daily Health Summary Header */}
+      <DailyHealthSummaryHeader
+        userName={user?.name}
+        role={user?.role}
+        goal={profile?.goal}
+        selectedDate={selectedDate}
+        onDateChange={setSelectedDate}
+        onPrevDay={handlePrevDay}
+        onNextDay={handleNextDay}
+        onToday={handleToday}
+        onRefresh={refreshDashboard}
+        isToday={isToday}
+        isLoading={loading}
+      />
+
+      {/* Error Alert */}
+      {error && (
+        <div className="p-5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center space-x-3">
+          <AlertCircle className="w-6 h-6 shrink-0 text-rose-600" />
+          <p className="text-sm font-semibold">{error}</p>
         </div>
+      )}
 
-        <div className="relative z-10 flex items-center gap-3 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20">
-          <div className="w-12 h-12 rounded-full bg-white text-emerald-700 flex items-center justify-center font-bold text-xl font-outfit">
-            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-          </div>
-          <div>
-            <div className="font-bold text-sm text-white">{user?.name}</div>
-            <div className="text-xs text-emerald-200">{user?.email}</div>
-          </div>
+      {/* Loading Skeleton */}
+      {loading && !dashboardData && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 animate-pulse">
+          {[1, 2, 3, 4].map((n) => (
+            <div key={n} className="h-40 bg-white rounded-3xl border border-slate-200 p-7" />
+          ))}
         </div>
-      </div>
+      )}
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-card flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
-            <Flame className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Calories</span>
-            <div className="text-2xl font-bold text-slate-900 font-outfit">1,450 / 2,000 <span className="text-xs text-slate-500 font-normal">kcal</span></div>
-          </div>
+      {/* Core Health Metric Cards Grid */}
+      {dashboardData && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+          {/* 2. Daily Calories Card */}
+          <DailyCalorieCard
+            caloriesConsumed={summary?.caloriesConsumed || 0}
+            caloriesTarget={summary?.caloriesTarget || 2000}
+            caloriesRemaining={summary?.caloriesRemaining || 0}
+            percentage={macros?.calories?.percentage || 0}
+          />
+
+          {/* 3. Water Intake Card */}
+          <WaterIntakeCard
+            waterConsumedMl={summary?.waterConsumedMl || 0}
+            waterGoalMl={summary?.waterGoalMl || 2500}
+            progressPercentage={summary?.waterProgressPercentage || 0}
+            onAddQuickWater={addQuickWater}
+            isUpdating={isWaterUpdating}
+          />
+
+          {/* 4. BMI Status Card */}
+          <BmiStatusCard
+            bmi={profile?.bmi}
+            bmiCategory={profile?.bmiCategory}
+            idealWeightRange={profile?.idealWeightRange}
+          />
+
+          {/* 5. Health Score Card */}
+          <HealthScoreCard healthScore={healthScore} />
         </div>
+      )}
 
-        {/* Dynamic Water Intake Card */}
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-card flex flex-col justify-between space-y-3 relative group">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 shrink-0">
-                <Droplet className="w-5 h-5 fill-current" />
-              </div>
-              <div>
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Water Intake</span>
-                <div className="text-xl font-bold text-slate-900 font-outfit">
-                  {consumedLiters} / {goalLiters} <span className="text-xs text-slate-500 font-normal">Liters</span>
-                </div>
-              </div>
-            </div>
+      {/* 6. Nutrition Summary Section */}
+      {macros && <NutritionSummarySection macros={macros} />}
 
-            <button
-              onClick={() => addIntake(250)}
-              className="p-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 transition text-xs font-bold flex items-center space-x-1"
-              title="Quick Add 250ml"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>250ml</span>
-            </button>
-          </div>
+      {/* 7. AI Personalized Recommendations Section */}
+      <AiRecommendationsSection recommendations={recommendations} />
 
-          {/* Progress Mini Bar & Link */}
-          <div className="space-y-1.5 pt-1 border-t border-slate-100">
-            <div className="flex justify-between items-center text-[11px] font-semibold">
-              <span className="text-slate-500">{summary?.progressPercentage || 0}% Completed</span>
-              <Link to="/water" className="text-sky-600 hover:text-sky-700 flex items-center space-x-1">
-                <span>Tracker</span>
-                <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-cyan-500 rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(summary?.progressPercentage || 0, 100)}%` }}
-              />
-            </div>
-          </div>
-        </div>
+      {/* 8. Recent Food History Section */}
+      <RecentFoodHistorySection foodHistory={foodHistory} />
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-card flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-600">
-            <Activity className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">BMI Score</span>
-            <div className="text-2xl font-bold text-slate-900 font-outfit">22.4 <span className="text-xs text-emerald-600 font-bold font-sans">Normal</span></div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl border border-slate-200/90 shadow-card flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600">
-            <Heart className="w-6 h-6" />
-          </div>
-          <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Health Score</span>
-            <div className="text-2xl font-bold text-slate-900 font-outfit">92 / 100</div>
-          </div>
-        </div>
-      </div>
-
-      {/* AI Recommendation Banner */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-card flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="flex items-start space-x-4">
-          <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="font-bold text-slate-900 font-outfit text-base">AI Personalized Recommendations</h3>
-            <p className="text-slate-600 text-sm mt-1">
-              Explore your customized Weight Loss, Weight Gain, Muscle Gain, Portion Guidance, and Health Profile comparisons.
-            </p>
-          </div>
-        </div>
-        <Link
-          to="/recommendations"
-          className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shrink-0 shadow-sm"
-        >
-          View All Recommendations →
-        </Link>
-      </div>
+      {/* Medical Safety Disclaimer Footer */}
+      <MedicalDisclaimerBanner disclaimer={dashboardData?.disclaimer} />
     </div>
   );
 };

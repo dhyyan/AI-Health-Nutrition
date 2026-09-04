@@ -68,6 +68,16 @@ export interface HealthTrendsData {
   bmi: (number | null)[];
 }
 
+export interface UserDashboardData {
+  userProfile?: any;
+  dailySummary?: any;
+  healthScore?: any;
+  macros?: any;
+  aiRecommendations?: any[];
+  recentFoodHistory?: any[];
+  disclaimer?: string;
+}
+
 export interface LogWeightBmiPayload {
   weightKg: number;
   heightCm?: number;
@@ -75,6 +85,11 @@ export interface LogWeightBmiPayload {
 }
 
 export const reportApi = {
+  getDashboard: async (date?: string): Promise<UserDashboardData> => {
+    const response = await api.get('/reports/dashboard', { params: { date } });
+    return response.data.data;
+  },
+
   getDailyReport: async (date?: string): Promise<DailyReportData> => {
     const response = await api.get('/reports/daily', { params: { date } });
     return response.data.data;

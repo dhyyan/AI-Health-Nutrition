@@ -61,19 +61,19 @@ export const SmartNotificationsPage: React.FC = () => {
   const isDenied = browserPermission === 'denied';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in duration-300">
+    <div className="max-w-[1680px] mx-auto px-6 sm:px-10 lg:px-16 py-8 space-y-10 animate-in fade-in duration-300">
       {/* Page Title & Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-200">
         <div>
-          <div className="flex items-center space-x-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-white shadow-md">
-              <Bell className="w-5 h-5" />
+          <div className="flex items-center space-x-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-white shadow-md">
+              <Bell className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-outfit tracking-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 font-outfit tracking-tight">
                 Smart Notifications
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500">
+              <p className="text-sm sm:text-base text-slate-600 font-medium mt-1">
                 Personalized reminders for meals, hydration, workouts, sleep & daily health tips
               </p>
             </div>
@@ -81,21 +81,21 @@ export const SmartNotificationsPage: React.FC = () => {
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center space-x-3 shrink-0">
+        <div className="flex items-center space-x-3.5 shrink-0">
           <button
             onClick={handleTestAlert}
-            className="px-4 py-2.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition border border-slate-200/80 flex items-center space-x-2"
+            className="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-sm font-extrabold transition border border-slate-200/80 flex items-center space-x-2 shadow-xs"
           >
-            <Volume2 className="w-4 h-4 text-cyan-600" />
+            <Volume2 className="w-4.5 h-4.5 text-cyan-600" />
             <span>Test Alert</span>
           </button>
 
           <button
             onClick={handleSave}
             disabled={saving}
-            className="btn-primary px-5 py-2.5 rounded-2xl text-xs font-bold shadow-md flex items-center space-x-2 disabled:opacity-50"
+            className="btn-primary px-6 py-3 rounded-2xl text-sm font-extrabold shadow-md flex items-center space-x-2 disabled:opacity-50"
           >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {saving ? <Loader2 className="w-4.5 h-4.5 animate-spin" /> : <Save className="w-4.5 h-4.5" />}
             <span>{saving ? 'Saving...' : 'Save All Preferences'}</span>
           </button>
         </div>

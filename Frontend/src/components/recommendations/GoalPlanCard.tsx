@@ -48,92 +48,92 @@ export const GoalPlanCard: React.FC<GoalPlanCardProps> = ({ plan }) => {
   const GoalIcon = style.icon;
 
   return (
-    <div className={`bg-white rounded-2xl border ${style.border} shadow-sm overflow-hidden`}>
+    <div className={`bg-white rounded-3xl border ${style.border} shadow-sm overflow-hidden space-y-2`}>
       {/* Header Banner */}
-      <div className={`bg-gradient-to-r ${style.bg} p-6 border-b ${style.border} flex flex-col md:flex-row md:items-center justify-between gap-4`}>
-        <div className="flex items-start space-x-3.5">
-          <div className={`p-3 rounded-2xl ${style.iconBg} shadow-md`}>
-            <GoalIcon className="w-6 h-6" />
+      <div className={`bg-gradient-to-r ${style.bg} p-8 border-b ${style.border} flex flex-col md:flex-row md:items-center justify-between gap-6`}>
+        <div className="flex items-start space-x-4">
+          <div className={`p-4 rounded-2xl ${style.iconBg} shadow-md`}>
+            <GoalIcon className="w-8 h-8" />
           </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-xl font-bold text-slate-900 font-outfit">{plan.title}</h2>
-              <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold border uppercase tracking-wider ${style.badge}`}>
+            <div className="flex items-center space-x-3">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-outfit">{plan.title}</h2>
+              <span className={`text-xs sm:text-sm px-3.5 py-1 rounded-full font-extrabold border uppercase tracking-wider ${style.badge}`}>
                 {plan.goal.replace('_', ' ')}
               </span>
             </div>
-            <p className="text-sm text-slate-600 mt-1 max-w-2xl">{plan.description}</p>
+            <p className="text-base sm:text-lg text-slate-600 mt-1.5 max-w-3xl leading-relaxed">{plan.description}</p>
           </div>
         </div>
       </div>
 
       {/* Target Macro Targets Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-5 bg-slate-50/80 border-b border-slate-100">
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-          <div className="flex items-center space-x-2 text-xs font-semibold text-slate-500">
-            <Flame className="w-4 h-4 text-orange-500" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 p-6 sm:p-8 bg-slate-50/80 border-b border-slate-100">
+        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-1.5">
+          <div className="flex items-center space-x-2 text-sm font-bold text-slate-600">
+            <Flame className="w-5 h-5 text-orange-500" />
             <span>Target Energy</span>
           </div>
-          <div className="text-xl font-extrabold text-slate-900 mt-1">
-            {plan.targetCalories} <span className="text-xs font-normal text-slate-500">kcal/day</span>
+          <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 font-outfit">
+            {plan.targetCalories} <span className="text-sm font-semibold text-slate-500">kcal/day</span>
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-          <div className="flex items-center space-x-2 text-xs font-semibold text-slate-500">
-            <Zap className="w-4 h-4 text-purple-500" />
+        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-1.5">
+          <div className="flex items-center space-x-2 text-sm font-bold text-slate-600">
+            <Zap className="w-5 h-5 text-purple-500" />
             <span>Target Protein</span>
           </div>
-          <div className="text-xl font-extrabold text-purple-700 mt-1">
-            {plan.targetProtein} <span className="text-xs font-normal text-slate-500">g/day</span>
+          <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-purple-700 font-outfit">
+            {plan.targetProtein} <span className="text-sm font-semibold text-slate-500">g/day</span>
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-          <div className="flex items-center space-x-2 text-xs font-semibold text-slate-500">
+        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-1.5">
+          <div className="flex items-center space-x-2 text-sm font-bold text-slate-600">
             <span>Target Carbs</span>
           </div>
-          <div className="text-xl font-extrabold text-amber-600 mt-1">
-            {plan.targetCarbs} <span className="text-xs font-normal text-slate-500">g/day</span>
+          <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-amber-600 font-outfit">
+            {plan.targetCarbs} <span className="text-sm font-semibold text-slate-500">g/day</span>
           </div>
         </div>
 
-        <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-2xs">
-          <div className="flex items-center space-x-2 text-xs font-semibold text-slate-500">
+        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-xs space-y-1.5">
+          <div className="flex items-center space-x-2 text-sm font-bold text-slate-600">
             <span>Target Fats</span>
           </div>
-          <div className="text-xl font-extrabold text-emerald-600 mt-1">
-            {plan.targetFat} <span className="text-xs font-normal text-slate-500">g/day</span>
+          <div className="text-3xl sm:text-4xl lg:text-5xl font-black text-emerald-600 font-outfit">
+            {plan.targetFat} <span className="text-sm font-semibold text-slate-500">g/day</span>
           </div>
         </div>
       </div>
 
       {/* Content Grid */}
-      <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="p-8 sm:p-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recommended Foods */}
         <div>
-          <h3 className="text-base font-bold text-slate-900 flex items-center space-x-2 mb-3">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+          <h3 className="text-xl font-extrabold text-slate-900 flex items-center space-x-3 mb-4">
+            <CheckCircle2 className="w-6 h-6 text-emerald-600" />
             <span>Recommended Priority Foods</span>
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {plan.recommendedFoods.map((food, idx) => (
               <div
                 key={idx}
-                className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-emerald-50/40 transition-colors flex items-start justify-between gap-3"
+                className="p-5 rounded-2xl border border-slate-200 bg-slate-50/60 hover:bg-emerald-50/50 transition-colors flex items-start justify-between gap-4 shadow-xs"
               >
-                <div>
-                  <div className="font-semibold text-sm text-slate-900">{food.name}</div>
-                  <div className="text-xs text-slate-500 mt-0.5">{food.description}</div>
-                  <div className="text-xs text-emerald-700 font-medium mt-1">
+                <div className="space-y-1">
+                  <div className="font-extrabold text-base sm:text-lg text-slate-900">{food.name}</div>
+                  <div className="text-sm text-slate-600">{food.description}</div>
+                  <div className="text-xs sm:text-sm text-emerald-700 font-bold mt-2">
                     💡 Reason: {food.reason}
                   </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <span className="text-xs font-bold bg-white px-2.5 py-1 rounded-lg border border-slate-200 text-slate-700">
+                <div className="text-right shrink-0 space-y-1">
+                  <span className="text-xs sm:text-sm font-extrabold bg-white px-3 py-1.5 rounded-xl border border-slate-200 text-slate-800 shadow-xs inline-block">
                     {food.calories} kcal
                   </span>
-                  <div className="text-[11px] font-semibold text-purple-600 mt-1">
+                  <div className="text-xs sm:text-sm font-extrabold text-purple-700">
                     {food.protein}g protein
                   </div>
                 </div>
@@ -143,19 +143,19 @@ export const GoalPlanCard: React.FC<GoalPlanCardProps> = ({ plan }) => {
         </div>
 
         {/* Avoid Foods & Activity Guidance */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           <div>
-            <h3 className="text-base font-bold text-slate-900 flex items-center space-x-2 mb-3">
-              <ShieldAlert className="w-5 h-5 text-rose-500" />
+            <h3 className="text-xl font-extrabold text-slate-900 flex items-center space-x-3 mb-4">
+              <ShieldAlert className="w-6 h-6 text-rose-500" />
               <span>Foods to Limit or Avoid</span>
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {plan.avoidFoods.map((item, idx) => (
                 <li
                   key={idx}
-                  className="flex items-center space-x-2.5 text-xs text-slate-700 bg-rose-50/50 border border-rose-100 p-2.5 rounded-xl"
+                  className="flex items-center space-x-3 text-sm sm:text-base font-semibold text-slate-800 bg-rose-50/60 border border-rose-200/90 p-4 rounded-2xl"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -163,17 +163,17 @@ export const GoalPlanCard: React.FC<GoalPlanCardProps> = ({ plan }) => {
           </div>
 
           <div>
-            <h3 className="text-base font-bold text-slate-900 flex items-center space-x-2 mb-3">
-              <Dumbbell className="w-5 h-5 text-indigo-600" />
+            <h3 className="text-xl font-extrabold text-slate-900 flex items-center space-x-3 mb-4">
+              <Dumbbell className="w-6 h-6 text-indigo-600" />
               <span>Goal-Aligned Physical Activity</span>
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {plan.activityAdvice.map((advice, idx) => (
                 <li
                   key={idx}
-                  className="flex items-start space-x-2.5 text-xs text-slate-700 bg-indigo-50/40 border border-indigo-100 p-2.5 rounded-xl"
+                  className="flex items-start space-x-3 text-sm sm:text-base font-semibold text-slate-800 bg-indigo-50/50 border border-indigo-200/90 p-4 rounded-2xl"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1 shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-indigo-500 mt-2 shrink-0" />
                   <span>{advice}</span>
                 </li>
               ))}

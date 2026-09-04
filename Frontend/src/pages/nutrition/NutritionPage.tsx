@@ -113,27 +113,27 @@ export const NutritionPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-[1680px] mx-auto px-6 sm:px-10 lg:px-16 py-8 space-y-10">
       {/* Hero Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
-        <div>
-          <div className="flex items-center space-x-2 text-emerald-600 font-bold text-xs uppercase tracking-wider mb-1">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-8">
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2 text-emerald-600 font-extrabold text-xs sm:text-sm uppercase tracking-wider mb-1">
             <PieChart className="w-4 h-4" />
             <span>Nutrition Analysis System</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold font-outfit text-slate-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-outfit text-slate-900 tracking-tight">
             Food & Micronutrient Breakdown
           </h1>
-          <p className="text-slate-500 text-sm mt-1 max-w-2xl">
+          <p className="text-slate-600 text-sm sm:text-base mt-1.5 max-w-3xl leading-relaxed font-medium">
             Query the verified nutrition database to inspect estimated calories, protein, carbohydrates, total fat, dietary fiber, sugar, sodium, and micronutrients scaled for your serving size.
           </p>
         </div>
 
-        <div className="flex items-center space-x-3 bg-emerald-50 border border-emerald-200/80 px-4 py-2.5 rounded-2xl text-emerald-900 shrink-0">
-          <Database className="w-5 h-5 text-emerald-600" />
+        <div className="flex items-center space-x-4 bg-emerald-50 border border-emerald-200/80 px-5 py-3 rounded-2xl text-emerald-900 shrink-0 shadow-xs">
+          <Database className="w-6 h-6 text-emerald-600" />
           <div>
-            <div className="text-xs font-bold">Nutrition Database API</div>
-            <div className="text-[11px] text-emerald-700">Verified Database</div>
+            <div className="text-xs sm:text-sm font-extrabold">Nutrition Database API</div>
+            <div className="text-xs text-emerald-700 font-bold">Verified Database</div>
           </div>
         </div>
       </div>

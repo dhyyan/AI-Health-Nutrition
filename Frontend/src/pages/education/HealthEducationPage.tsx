@@ -103,39 +103,39 @@ export const HealthEducationPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-16 font-sans">
       {/* Hero Header Section */}
-      <section className="bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-900 text-white py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden shadow-lg">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/20 border border-emerald-500/30 rounded-full text-emerald-300 text-xs font-semibold uppercase tracking-wider mb-3">
-                <BookOpen className="w-3.5 h-3.5" /> Educational Knowledge Center
+      <section className="bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-900 text-white py-14 px-6 sm:px-10 lg:px-16 relative overflow-hidden shadow-lg">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="max-w-[1680px] mx-auto relative z-10">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <div className="space-y-3">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-emerald-500/20 border border-emerald-500/30 rounded-full text-emerald-300 text-xs sm:text-sm font-extrabold uppercase tracking-wider">
+                <BookOpen className="w-4 h-4" /> Educational Knowledge Center
               </div>
-              <h1 className="text-3xl sm:text-4xl font-extrabold text-white font-outfit tracking-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white font-outfit tracking-tight">
                 Health Education & Wellness Guides
               </h1>
-              <p className="mt-2 text-slate-300 text-sm sm:text-base max-w-2xl">
+              <p className="text-slate-200 text-base sm:text-lg max-w-3xl leading-relaxed">
                 Explore evidence-informed articles on nutrition, exercise routines, preventive wellness habits, and healthy eating choices.
               </p>
             </div>
 
             {/* Quick Stats / Badge */}
-            <div className="bg-white/10 backdrop-blur-md border border-white/15 p-4 rounded-2xl flex items-center gap-4 text-slate-100">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xl">
+            <div className="bg-white/10 backdrop-blur-md border border-white/15 p-6 rounded-3xl flex items-center gap-5 text-slate-100 shrink-0 shadow-lg">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-3xl">
                 📚
               </div>
               <div>
-                <div className="text-xs text-slate-300 uppercase tracking-wider font-semibold">
+                <div className="text-xs sm:text-sm text-slate-300 uppercase tracking-wider font-extrabold">
                   Verified Guides
                 </div>
-                <div className="text-lg font-bold text-white">{articles.length} Educational Topics</div>
+                <div className="text-xl sm:text-2xl font-black text-white">{articles.length} Educational Topics</div>
               </div>
             </div>
           </div>
 
           {/* Medical Safety Disclaimer Callout Banner */}
-          <div className="mt-6 p-4 bg-amber-500/15 border border-amber-400/30 rounded-2xl flex items-start gap-3 text-amber-200 text-xs sm:text-sm">
-            <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="mt-8 p-5 bg-amber-500/15 border border-amber-400/30 rounded-2xl flex items-start gap-4 text-amber-200 text-xs sm:text-base leading-relaxed">
+            <AlertTriangle className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
             <div>
               <span className="font-bold text-amber-300">Important Educational Disclaimer: </span>
               All content provided in this section is for general wellness education only. It is not intended as medical diagnosis, treatment, or professional healthcare advice. Always consult a qualified medical provider for personal conditions.
@@ -145,36 +145,36 @@ export const HealthEducationPage: React.FC = () => {
       </section>
 
       {/* Main Container */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+      <div className="max-w-[1680px] mx-auto px-6 sm:px-10 lg:px-16 mt-10 space-y-8">
         {/* Main Tab Switcher (Articles vs FAQ) */}
-        <div className="flex items-center justify-between border-b border-slate-200 pb-4 mb-6">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-5">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => setActiveTab('articles')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              className={`flex items-center gap-3 px-6 py-3.5 rounded-2xl text-base font-extrabold transition-all ${
                 activeTab === 'articles'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25'
                   : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
             >
-              <BookOpen className="w-4 h-4" />
+              <BookOpen className="w-5 h-5" />
               <span>Articles & Guides</span>
-              <span className="ml-1 bg-white/20 text-white text-xs px-2 py-0.5 rounded-full font-semibold">
+              <span className="ml-1 bg-white/20 text-white text-xs px-2.5 py-1 rounded-full font-bold">
                 {articles.length}
               </span>
             </button>
 
             <button
               onClick={() => setActiveTab('faqs')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              className={`flex items-center gap-3 px-6 py-3.5 rounded-2xl text-base font-extrabold transition-all ${
                 activeTab === 'faqs'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+                  ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25'
                   : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
             >
-              <HelpCircle className="w-4 h-4" />
+              <HelpCircle className="w-5 h-5" />
               <span>Frequently Asked Questions (FAQ)</span>
-              <span className="ml-1 bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-semibold">
+              <span className="ml-1 bg-slate-200 text-slate-700 text-xs px-2.5 py-1 rounded-full font-bold">
                 {faqs.length}
               </span>
             </button>
