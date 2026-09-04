@@ -1,7 +1,7 @@
 import { ReminderSettingsRepository } from '../../adapters/repositories/ReminderSettingsRepository';
 import { NotificationRepository } from '../../adapters/repositories/NotificationRepository';
 import { DailyTipRepository } from '../../adapters/repositories/DailyTipRepository';
-import { TriggerScheduledRemindersUseCase } from '../../usecases/reminder/TriggerScheduledRemindersUseCase';
+import { TriggerScheduledRemindersUseCase } from '../../useCases/reminder/TriggerScheduledRemindersUseCase';
 
 export class ReminderSchedulerService {
   private timer: NodeJS.Timeout | null = null;

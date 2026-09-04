@@ -3,10 +3,10 @@ import { authenticateJwt } from '../../adapters/middlewares/auth.middleware';
 import { ReminderSettingsRepository } from '../../adapters/repositories/ReminderSettingsRepository';
 import { DailyTipRepository } from '../../adapters/repositories/DailyTipRepository';
 import { NotificationRepository } from '../../adapters/repositories/NotificationRepository';
-import { GetReminderSettingsUseCase } from '../../usecases/reminder/GetReminderSettingsUseCase';
-import { UpdateReminderSettingsUseCase } from '../../usecases/reminder/UpdateReminderSettingsUseCase';
-import { GetDailyHealthTipUseCase } from '../../usecases/reminder/GetDailyHealthTipUseCase';
-import { TriggerScheduledRemindersUseCase } from '../../usecases/reminder/TriggerScheduledRemindersUseCase';
+import { GetReminderSettingsUseCase } from '../../useCases/reminder/GetReminderSettingsUseCase';
+import { UpdateReminderSettingsUseCase } from '../../useCases/reminder/UpdateReminderSettingsUseCase';
+import { GetDailyHealthTipUseCase } from '../../useCases/reminder/GetDailyHealthTipUseCase';
+import { TriggerScheduledRemindersUseCase } from '../../useCases/reminder/TriggerScheduledRemindersUseCase';
 import { ReminderController } from '../../adapters/controllers/reminder/ReminderController';
 
 const router = Router();
