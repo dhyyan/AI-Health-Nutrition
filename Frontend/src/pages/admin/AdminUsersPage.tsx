@@ -62,7 +62,8 @@ export const AdminUsersPage: React.FC = () => {
         page,
         limit,
       });
-      setUsers(data.users);
+      const nonAdminUsers = (data.users || []).filter((u: User) => u.role !== 'admin');
+      setUsers(nonAdminUsers);
       setTotalUsers(data.total);
       setTotalPages(data.totalPages);
     } catch (err: any) {

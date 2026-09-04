@@ -87,6 +87,9 @@ export class UserRepository implements IUserRepository {
     }
     if (query?.role) {
       mongoQuery.role = query.role;
+    } else {
+      // Exclude admin accounts from general user listing
+      mongoQuery.role = { $ne: 'admin' };
     }
     if (query?.search) {
       const searchRegex = new RegExp(query.search.trim(), 'i');

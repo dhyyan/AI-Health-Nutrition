@@ -27,7 +27,7 @@ export const AdminLoginPage: React.FC = () => {
     try {
       const authData = await adminService.adminLogin({ email, password });
       login(authData);
-      navigate('/admin/users');
+      navigate('/admin/users', { replace: true });
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Admin authentication failed. Please check credentials.';
       setError(msg);

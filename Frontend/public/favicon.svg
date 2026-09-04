@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="nutriGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+  </defs>
+  <!-- Background Card -->
+  <rect x="32" y="32" width="448" height="448" rx="128" fill="url(#nutriGradient)" />
+  
+  <!-- Health Activity Pulse Line -->
+  <path d="M130 260 H195 L225 170 L265 330 L305 230 L330 260 H382" 
+        fill="none" 
+        stroke="#FFFFFF" 
+        stroke-width="34" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+        
+  <!-- AI Sparkle Icon -->
+  <path d="M360 135 C360 155 370 165 390 165 C370 165 360 175 360 195 C360 175 350 165 330 165 C350 165 360 155 360 135 Z" 
+        fill="#FFFFFF" />
+</svg>

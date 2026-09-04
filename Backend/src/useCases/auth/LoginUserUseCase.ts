@@ -22,6 +22,10 @@ export class LoginUserUseCase {
       throw new AppError('Invalid email address or password.', 401);
     }
 
+    if (user.role === 'admin') {
+      throw new AppError('Admin accounts cannot log in through the user portal. Please use the Admin Console (/admin/login).', 403);
+    }
+
     if (user.status === 'blocked') {
       throw new AppError('Your account has been blocked by the administrator.', 403);
     }

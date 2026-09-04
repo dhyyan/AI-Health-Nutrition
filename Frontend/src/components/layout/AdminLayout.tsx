@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate, Link, useLocation } from 'react-router-dom';
 import {
   Users,
-  LayoutDashboard,
   ShieldCheck,
   LogOut,
   Menu,
   X,
   ChevronRight,
-  ExternalLink,
-  Activity,
   Bell,
   UtensilsCrossed,
   BookOpen,
@@ -24,7 +21,7 @@ export const AdminLayout: React.FC = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/admin/login');
+    navigate('/admin/login', { replace: true });
   };
 
   const navItems = [
@@ -45,12 +42,6 @@ export const AdminLayout: React.FC = () => {
       label: 'Health Education',
       icon: BookOpen,
       description: 'Articles, exercise guides & FAQs',
-    },
-    {
-      path: '/admin/dashboard',
-      label: 'System Overview',
-      icon: LayoutDashboard,
-      description: 'Metrics & health vitals summary',
     },
   ];
 
@@ -125,19 +116,6 @@ export const AdminLayout: React.FC = () => {
                 </NavLink>
               );
             })}
-
-            <div className="pt-4 px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-              External Link
-            </div>
-            <Link
-              to="/"
-              className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 border border-slate-800/40 transition"
-            >
-              <span className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-teal-400" /> Main User App
-              </span>
-              <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
-            </Link>
           </nav>
         </div>
 

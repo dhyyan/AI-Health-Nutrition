@@ -51,7 +51,7 @@ export const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     setIsMobileMenuOpen(false);
-    navigate('/login');
+    navigate('/login', { replace: true });
   };
 
   const toggleDropdown = (name: string) => {

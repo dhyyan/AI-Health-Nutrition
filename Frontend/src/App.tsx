@@ -50,8 +50,10 @@ export const App: React.FC = () => {
         <Router>
           <ToastNotificationContainer />
           <Routes>
-            {/* Admin Login (Standalone) */}
-            <Route path="/admin/login" element={<AdminLoginPage />} />
+            {/* Standalone Guest Only Admin Login */}
+            <Route element={<PublicRoute />}>
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+            </Route>
 
             {/* Protected Admin Routes with Sidebar & Outlet */}
             <Route element={<AdminRoute />}>
