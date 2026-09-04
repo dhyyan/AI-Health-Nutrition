@@ -25,8 +25,12 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static uploaded files
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-// Routes
+// Public Health & UptimeBot Keep-Alive Routes
+app.use('/', healthRoutes);
+app.use('/health', healthRoutes);
+app.use('/ping', healthRoutes);
 app.use('/api', healthRoutes);
+
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
