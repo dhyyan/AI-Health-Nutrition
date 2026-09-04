@@ -104,76 +104,7 @@ export const SmartNotificationsPage: React.FC = () => {
       {/* Daily Health Tip Banner */}
       <DailyTipBanner tip={dailyTip} onRefresh={() => fetchTip()} />
 
-      {/* Browser Permission Banner */}
-      {browserPermission !== 'granted' ? (
-        <div
-          className={`rounded-3xl p-5 border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs ${
-            isDenied ? 'bg-rose-50/90 border-rose-200 text-rose-900' : 'bg-amber-50/90 border-amber-200 text-amber-900'
-          }`}
-        >
-          <div className="flex items-start space-x-3">
-            {isDenied ? (
-              <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-            ) : (
-              <BellOff className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-            )}
-            <div>
-              <div className="font-bold text-sm">
-                Desktop Notifications Status: <span className="uppercase font-extrabold">{browserPermission}</span>
-              </div>
-              <p className="text-xs opacity-90 mt-1">
-                {isDenied
-                  ? 'Notifications are currently blocked by browser permissions. Popups require manual browser unlock.'
-                  : 'Grant browser permission to receive instant desktop popups even when working in another window.'}
-              </p>
-            </div>
-          </div>
 
-          <button
-            onClick={async () => {
-              if (isDenied) {
-                setShowBlockedModal(true);
-              } else {
-                await requestBrowserPermission();
-              }
-            }}
-            className={`px-4 py-2.5 text-white rounded-2xl font-bold transition-all shrink-0 shadow-sm text-xs flex items-center space-x-1.5 ${
-              isDenied ? 'bg-rose-600 hover:bg-rose-700' : 'bg-amber-600 hover:bg-amber-700'
-            }`}
-          >
-            {isDenied ? (
-              <>
-                <HelpCircle className="w-4 h-4" />
-                <span>How to Allow Popups</span>
-              </>
-            ) : (
-              <span>Enable Browser Popups</span>
-            )}
-          </button>
-        </div>
-      ) : (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-4 flex items-center justify-between text-xs font-semibold text-emerald-800">
-          <div className="flex items-center space-x-2.5">
-            <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
-            <span>Browser Desktop Popups are <strong>Active & Permitted</strong>.</span>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <label className="flex items-center space-x-2 cursor-pointer text-slate-700">
-              <input
-                type="checkbox"
-                checked={localSettings.soundEnabled}
-                onChange={(e) => setLocalSettings({ ...localSettings, soundEnabled: e.target.checked })}
-                className="rounded text-emerald-600 focus:ring-emerald-500"
-              />
-              <span className="flex items-center space-x-1 text-xs">
-                {localSettings.soundEnabled ? <Volume2 className="w-3.5 h-3.5 text-emerald-600" /> : <VolumeX className="w-3.5 h-3.5 text-slate-400" />}
-                <span>Audio Alert Sound</span>
-              </span>
-            </label>
-          </div>
-        </div>
-      )}
 
       {/* Grid of Reminder Schedule Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
