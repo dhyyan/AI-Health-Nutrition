@@ -13,12 +13,11 @@
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types"],
     "paths": {
-      "*": ["node_modules/*"],
-      "@domain/*": ["src/domain/*"],
-      "@useCases/*": ["src/useCases/*"],
-      "@adapters/*": ["src/adapters/*"],
-      "@framework/*": ["src/framework/*"],
-      "@shared/*": ["src/shared/*"]
+      "@domain/*": ["./src/domain/*"],
+      "@useCases/*": ["./src/useCases/*"],
+      "@adapters/*": ["./src/adapters/*"],
+      "@framework/*": ["./src/framework/*"],
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "include": ["src/**/*"],
