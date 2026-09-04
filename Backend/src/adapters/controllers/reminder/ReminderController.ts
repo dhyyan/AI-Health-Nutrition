@@ -1,9 +1,9 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../../middlewares/auth.middleware';
-import { GetReminderSettingsUseCase } from '../../../usecases/reminder/GetReminderSettingsUseCase';
-import { UpdateReminderSettingsUseCase } from '../../../usecases/reminder/UpdateReminderSettingsUseCase';
-import { GetDailyHealthTipUseCase } from '../../../usecases/reminder/GetDailyHealthTipUseCase';
-import { TriggerScheduledRemindersUseCase } from '../../../usecases/reminder/TriggerScheduledRemindersUseCase';
+import { GetReminderSettingsUseCase } from '../../../useCases/reminder/GetReminderSettingsUseCase';
+import { UpdateReminderSettingsUseCase } from '../../../useCases/reminder/UpdateReminderSettingsUseCase';
+import { GetDailyHealthTipUseCase } from '../../../useCases/reminder/GetDailyHealthTipUseCase';
+import { TriggerScheduledRemindersUseCase } from '../../../useCases/reminder/TriggerScheduledRemindersUseCase';
 import { TipCategory } from '../../../domain/entities/DailyTip';
 
 export class ReminderController {

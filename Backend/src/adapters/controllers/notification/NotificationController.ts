@@ -1,9 +1,9 @@
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../../middlewares/auth.middleware';
-import { CreateNotificationUseCase } from '../../../usecases/notification/CreateNotificationUseCase';
-import { GetNotificationsUseCase } from '../../../usecases/notification/GetNotificationsUseCase';
-import { MarkNotificationReadUseCase } from '../../../usecases/notification/MarkNotificationReadUseCase';
-import { DeleteNotificationUseCase } from '../../../usecases/notification/DeleteNotificationUseCase';
+import { CreateNotificationUseCase } from '../../../useCases/notification/CreateNotificationUseCase';
+import { GetNotificationsUseCase } from '../../../useCases/notification/GetNotificationsUseCase';
+import { MarkNotificationReadUseCase } from '../../../useCases/notification/MarkNotificationReadUseCase';
+import { DeleteNotificationUseCase } from '../../../useCases/notification/DeleteNotificationUseCase';
 
 export class NotificationController {
   constructor(

@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { authenticateJwt } from '../../adapters/middlewares/auth.middleware';
 import { NotificationRepository } from '../../adapters/repositories/NotificationRepository';
-import { CreateNotificationUseCase } from '../../usecases/notification/CreateNotificationUseCase';
-import { GetNotificationsUseCase } from '../../usecases/notification/GetNotificationsUseCase';
-import { MarkNotificationReadUseCase } from '../../usecases/notification/MarkNotificationReadUseCase';
-import { DeleteNotificationUseCase } from '../../usecases/notification/DeleteNotificationUseCase';
+import { CreateNotificationUseCase } from '../../useCases/notification/CreateNotificationUseCase';
+import { GetNotificationsUseCase } from '../../useCases/notification/GetNotificationsUseCase';
+import { MarkNotificationReadUseCase } from '../../useCases/notification/MarkNotificationReadUseCase';
+import { DeleteNotificationUseCase } from '../../useCases/notification/DeleteNotificationUseCase';
 import { NotificationController } from '../../adapters/controllers/notification/NotificationController';
 
 const router = Router();
