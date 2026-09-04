@@ -2,9 +2,6 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "CommonJS",
-    "moduleResolution": "node",
-    "baseUrl": ".",
-    "ignoreDeprecations": "5.0",
     "rootDir": "./src",
     "outDir": "./dist",
     "esModuleInterop": true,
@@ -14,11 +11,11 @@
     "resolveJsonModule": true,
     "typeRoots": ["./node_modules/@types"],
     "paths": {
-      "@domain/*": ["src/domain/*"],
-      "@useCases/*": ["src/useCases/*"],
-      "@adapters/*": ["src/adapters/*"],
-      "@framework/*": ["src/framework/*"],
-      "@shared/*": ["src/shared/*"]
+      "@domain/*": ["./src/domain/*"],
+      "@useCases/*": ["./src/useCases/*"],
+      "@adapters/*": ["./src/adapters/*"],
+      "@framework/*": ["./src/framework/*"],
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "include": ["src/**/*"],
