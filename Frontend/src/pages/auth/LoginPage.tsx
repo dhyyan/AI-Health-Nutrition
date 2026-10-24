@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogIn, Mail, Lock, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { LogIn, Mail, Lock, ArrowRight, AlertCircle, Loader2, ShieldCheck } from 'lucide-react';
 import { authService } from '../../services/auth.service';
 import { useAuth } from '../../context/AuthContext';
 
@@ -146,6 +146,17 @@ export const LoginPage: React.FC = () => {
           Don't have an account?{' '}
           <Link to="/register" className="font-bold text-emerald-600 hover:text-emerald-700">
             Create Account
+          </Link>
+        </div>
+
+        <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <span>Administrator Access:</span>
+          <Link
+            to="/admin/login"
+            className="inline-flex items-center gap-1 font-semibold text-slate-700 hover:text-emerald-600 transition"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            Admin Console
           </Link>
         </div>
       </div>
