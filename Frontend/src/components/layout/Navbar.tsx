@@ -60,7 +60,7 @@ export const Navbar: React.FC = () => {
 
   // Nav Groups Breakdown
   const aiGroup = [
-    { path: '/scan', label: 'AI Food Scanner', desc: 'Scan meals via live camera or photos', icon: Camera },
+    { path: '/scan', label: 'AI Food Scanner', desc: 'Scan meals via food photo file upload', icon: Camera },
     { path: '/recommendations', label: 'AI Recommendations', desc: 'Personalized daily wellness suggestions', icon: Sparkles },
     { path: '/meals', label: 'Meal Planner', desc: 'Goal-based weekly meal plans', icon: Utensils },
   ];
@@ -119,7 +119,6 @@ export const Navbar: React.FC = () => {
                   : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80'
               }`}
             >
-              <Activity className={`w-5 h-5 ${location.pathname === '/dashboard' ? 'text-emerald-600' : 'text-slate-400'}`} />
               <span>Dashboard</span>
             </Link>
           )}
@@ -135,7 +134,6 @@ export const Navbar: React.FC = () => {
                     : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/80'
                 }`}
               >
-                <Sparkles className="w-5 h-5 text-emerald-600" />
                 <span>AI Features</span>
                 <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === 'ai' ? 'rotate-180 text-emerald-600' : 'text-slate-400'}`} />
               </button>
@@ -323,7 +321,6 @@ export const Navbar: React.FC = () => {
                   location.pathname === '/dashboard' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'text-slate-800 hover:bg-slate-100'
                 }`}
               >
-                <Activity className="w-4 h-4 text-emerald-600" />
                 <span>Dashboard</span>
               </Link>
 
