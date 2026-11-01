@@ -7,6 +7,8 @@ export type NotificationType =
   | 'health_alert'
   | 'system';
 
+export type ToastType = NotificationType | 'success' | 'error' | 'warning' | 'info';
+
 export interface AppNotification {
   id: string;
   userId: string;
@@ -23,6 +25,6 @@ export interface ToastItem {
   id: string;
   title: string;
   message: string;
-  type: NotificationType;
+  type: ToastType;
   createdAt: Date;
 }

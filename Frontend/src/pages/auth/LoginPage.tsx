@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { LogIn, Mail, Lock, ArrowRight, AlertCircle, Loader2, ShieldCheck } from 'lucide-react';
 import { authService } from '../../services/auth.service';
 import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showToast } = useNotifications();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -36,10 +38,12 @@ export const LoginPage: React.FC = () => {
     try {
       const authData = await authService.login(formData);
       login(authData);
+      showToast('Login Successful', `Welcome back, ${authData.user?.name || 'User'}!`, 'success');
       navigate('/dashboard', { replace: true });
     } catch (err: any) {
       const message = err.response?.data?.message || 'Invalid email or password.';
       setError(message);
+      showToast('Login Failed', message, 'error');
 
       if (message.toLowerCase().includes('not verified')) {
         setTimeout(() => {

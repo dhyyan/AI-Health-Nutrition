@@ -12,15 +12,18 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 
 export const AdminLayout: React.FC = () => {
   const { user, logout } = useAuth();
+  const { showToast } = useNotifications();
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
+    showToast('Admin Logged Out', 'You have been logged out of the Admin Portal.', 'info');
     navigate('/admin/login', { replace: true });
   };
 

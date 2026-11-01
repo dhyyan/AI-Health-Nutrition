@@ -3,11 +3,13 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, Mail, ArrowRight, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { authService } from '../../services/auth.service';
 import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 
 export const VerifyOtpPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showToast } = useNotifications();
 
   const [email, setEmail] = useState<string>(location.state?.email || '');
   const [otp, setOtp] = useState<string>('');
@@ -35,9 +37,12 @@ export const VerifyOtpPage: React.FC = () => {
     try {
       const authData = await authService.verifyOtp({ email, otp });
       login(authData);
+      showToast('Login Successful', `Welcome to NutriAI, ${authData.user?.name || 'User'}!`, 'success');
       navigate('/dashboard', { replace: true });
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid verification code. Please check your backend terminal.');
+      const msg = err.response?.data?.message || 'Invalid verification code. Please check your backend terminal.';
+      setError(msg);
+      showToast('Verification Failed', msg, 'error');
     } finally {
       setLoading(false);
     }

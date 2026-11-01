@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Camera, X, RefreshCw, Check, AlertCircle, Sparkles } from 'lucide-react';
+import { Camera, X, RefreshCw, Check, AlertCircle } from 'lucide-react';
 
 interface CameraCaptureModalProps {
   isOpen: boolean;
@@ -159,8 +159,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               />
               {/* Scan Overlay Guidelines */}
               <div className="absolute inset-0 border-2 border-dashed border-emerald-400/40 m-8 rounded-3xl pointer-events-none flex items-center justify-center">
-                <div className="bg-slate-900/60 backdrop-blur-sm px-3 py-1.5 rounded-full text-[11px] font-bold text-emerald-300 flex items-center space-x-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
+                <div className="bg-slate-900/60 backdrop-blur-sm px-3.5 py-1.5 rounded-full text-[11px] font-bold text-emerald-300 flex items-center justify-center">
                   <span>Center Food Item in View</span>
                 </div>
               </div>
