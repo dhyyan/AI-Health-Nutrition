@@ -19,12 +19,14 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 import { NotificationCenter } from './NotificationCenter';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const { showToast } = useNotifications();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -50,6 +52,7 @@ export const Navbar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
+    showToast('Logged Out', 'You have been successfully logged out.', 'info');
     setIsMobileMenuOpen(false);
     navigate('/login', { replace: true });
   };

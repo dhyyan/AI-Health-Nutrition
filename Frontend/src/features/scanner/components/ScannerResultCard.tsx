@@ -8,7 +8,7 @@ import {
   Flame,
   PieChart,
   Plus,
-  Sparkles,
+  Utensils,
   Info,
   Check,
   Scale,
@@ -97,7 +97,7 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-tr from-emerald-800 to-teal-900 flex items-center justify-center text-white/50">
-            <Sparkles className="w-16 h-16 animate-pulse" />
+            <Utensils className="w-16 h-16 text-white/40" />
           </div>
         )}
 
@@ -258,7 +258,6 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
         {/* ---------------------------------------------------- */}
         <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-emerald-950 space-y-2">
           <div className="flex items-center space-x-2 text-emerald-800">
-            <Sparkles className="w-4 h-4 text-emerald-600" />
             <h4 className="font-extrabold font-outfit uppercase tracking-wider text-xs">
               AI Nutrition Engine Recommendation
             </h4>
@@ -470,7 +469,6 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
         {result.healthTips && result.healthTips.length > 0 && (
           <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
             <h5 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center space-x-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
               <span>Nutrition Tips for this Meal</span>
             </h5>
             <ul className="text-xs text-slate-600 space-y-1 pl-4 list-disc font-medium">

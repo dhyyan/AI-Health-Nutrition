@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, KeyRound } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 import { adminService } from '../../services/admin.service';
 
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showToast } = useNotifications();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,10 +29,12 @@ export const AdminLoginPage: React.FC = () => {
     try {
       const authData = await adminService.adminLogin({ email, password });
       login(authData);
+      showToast('Admin Login Successful', `Welcome, Admin ${authData.user?.name || ''}!`, 'success');
       navigate('/admin/users', { replace: true });
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Admin authentication failed. Please check credentials.';
       setError(msg);
+      showToast('Admin Login Failed', msg, 'error');
     } finally {
       setIsLoading(false);
     }

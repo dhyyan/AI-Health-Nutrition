@@ -3,11 +3,11 @@ import { scannerApi, ScanResultData } from '../../services/scannerApi';
 import { ScannerResultCard } from '../../features/scanner/components/ScannerResultCard';
 import {
   Upload,
-  Sparkles,
   AlertCircle,
   ImageIcon,
   CheckCircle2,
   Zap,
+  Loader2,
 } from 'lucide-react';
 
 export const FoodScannerPage: React.FC = () => {
@@ -71,8 +71,7 @@ export const FoodScannerPage: React.FC = () => {
     <div className="max-w-[1680px] mx-auto px-6 sm:px-10 lg:px-16 py-8 space-y-10">
       {/* Banner Title */}
       <div className="text-center mb-10 space-y-3">
-        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black uppercase tracking-wider">
-          <Sparkles className="w-4 h-4 text-emerald-600" />
+        <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-black uppercase tracking-wider">
           <span>AI Nutrition Engine</span>
         </div>
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black font-outfit text-slate-900 tracking-tight">
@@ -163,7 +162,7 @@ export const FoodScannerPage: React.FC = () => {
           <div className="relative w-28 h-28 mx-auto flex items-center justify-center">
             <div className="absolute inset-0 rounded-full border-4 border-emerald-500/20 animate-ping" />
             <div className="w-24 h-24 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/40">
-              <Sparkles className="w-12 h-12 animate-spin" />
+              <Loader2 className="w-12 h-12 animate-spin" />
             </div>
           </div>
 

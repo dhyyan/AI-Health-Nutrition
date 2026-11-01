@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { AppNotification, NotificationType, ToastItem } from '../types/notification';
+import { AppNotification, NotificationType, ToastItem, ToastType } from '../types/notification';
 import {
   getNotifications,
   createNotification,
@@ -17,6 +17,7 @@ interface NotificationContextType {
   browserPermission: NotificationPermission;
   requestBrowserPermission: () => Promise<NotificationPermission>;
   addNotification: (title: string, message: string, type?: NotificationType, actionUrl?: string) => Promise<void>;
+  showToast: (title: string, message: string, type?: ToastType) => void;
   markAsRead: (id: string) => Promise<void>;
   markAllAsRead: () => Promise<void>;
   deleteNotification: (id: string) => Promise<void>;
@@ -135,6 +136,11 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     };
     setActiveToasts((prev) => [newToast, ...prev].slice(0, 5));
 
+    // Auto dismiss after 4.5 seconds
+    setTimeout(() => {
+      setActiveToasts((prev) => prev.filter((t) => t.id !== toastId));
+    }, 4500);
+
     // Persist to backend if authenticated
     if (isAuthenticated) {
       try {
@@ -220,6 +226,27 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setActiveToasts((prev) => prev.filter((t) => t.id !== toastId));
   };
 
+  const showToast = useCallback((title: string, message: string, type: ToastType = 'info') => {
+    const toastId = 'toast-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4);
+
+    playSound();
+
+    const newToast: ToastItem = {
+      id: toastId,
+      title,
+      message,
+      type,
+      createdAt: new Date(),
+    };
+
+    setActiveToasts((prev) => [newToast, ...prev].slice(0, 5));
+
+    // Auto dismiss after 4 seconds
+    setTimeout(() => {
+      setActiveToasts((prev) => prev.filter((t) => t.id !== toastId));
+    }, 4000);
+  }, []);
+
   return (
     <NotificationContext.Provider
       value={{
@@ -230,6 +257,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         browserPermission,
         requestBrowserPermission,
         addNotification,
+        showToast,
         markAsRead,
         markAllAsRead,
         deleteNotification,
