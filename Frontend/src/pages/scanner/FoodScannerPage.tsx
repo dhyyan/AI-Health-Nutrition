@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { scannerApi, ScanResultData } from '../../services/scannerApi';
-import { CameraCaptureModal } from '../../features/scanner/components/CameraCaptureModal';
 import { ScannerResultCard } from '../../features/scanner/components/ScannerResultCard';
 import {
-  Camera,
   Upload,
   Sparkles,
   AlertCircle,
@@ -15,7 +13,6 @@ import {
 export const FoodScannerPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | Blob | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
 
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [scanResult, setScanResult] = useState<ScanResultData | null>(null);
@@ -39,19 +36,10 @@ export const FoodScannerPage: React.FC = () => {
     }
   };
 
-  const handleCameraCapture = (blob: Blob) => {
-    setErrorMsg(null);
-    setSelectedFile(blob);
-    const url = URL.createObjectURL(blob);
-    setPreviewUrl(url);
-    // Auto-trigger analysis for seamless camera capture experience
-    executeScan(blob);
-  };
-
   const executeScan = async (imageToScan?: File | Blob) => {
     const file = imageToScan || selectedFile;
     if (!file) {
-      setErrorMsg('Please select an image file or capture a photo first.');
+      setErrorMsg('Please select an image file first.');
       return;
     }
 
@@ -105,42 +93,29 @@ export const FoodScannerPage: React.FC = () => {
             </div>
           )}
 
-          {/* Action Tabs: Upload vs Live Camera */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Live Camera Button */}
-            <button
-              type="button"
-              onClick={() => setIsCameraOpen(true)}
-              className="p-8 rounded-3xl bg-gradient-to-tr from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold shadow-lg shadow-emerald-600/20 transition-all flex flex-col items-center justify-center space-y-4 group"
-            >
-              <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Camera className="w-8 h-8 text-white" />
-              </div>
-              <div className="text-center">
-                <span className="text-lg font-extrabold font-outfit block">Real-Time Camera</span>
-                <span className="text-xs sm:text-sm text-emerald-100 font-medium">Capture photo via webcam / camera</span>
-              </div>
-            </button>
-
-            {/* Dropzone File Picker */}
-            <div
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              className="relative p-8 rounded-3xl border-2 border-dashed border-slate-300 hover:border-emerald-500 bg-slate-50/50 hover:bg-emerald-50/30 transition-all flex flex-col items-center justify-center text-center cursor-pointer group"
-            >
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
-                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-              />
-              <div className="w-16 h-16 rounded-2xl bg-slate-200 group-hover:bg-emerald-100 flex items-center justify-center text-slate-600 group-hover:text-emerald-700 transition-colors mb-3">
-                <Upload className="w-8 h-8" />
-              </div>
-              <span className="text-base font-extrabold text-slate-800 font-outfit">Choose Image File</span>
-              <span className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
-                Drag & drop or browse JPG, PNG, WEBP
-              </span>
+          {/* Dropzone File Picker */}
+          <div
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            className="relative p-10 sm:p-14 rounded-3xl border-2 border-dashed border-emerald-300 hover:border-emerald-500 bg-emerald-50/20 hover:bg-emerald-50/50 transition-all flex flex-col items-center justify-center text-center cursor-pointer group shadow-xs"
+          >
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
+              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+            />
+            <div className="w-20 h-20 rounded-3xl bg-emerald-100 group-hover:bg-emerald-200/80 flex items-center justify-center text-emerald-700 group-hover:scale-105 transition-all mb-4 shadow-sm">
+              <Upload className="w-10 h-10 text-emerald-600" />
+            </div>
+            <span className="text-xl sm:text-2xl font-black text-slate-800 font-outfit">
+              Choose Photo from File
+            </span>
+            <span className="text-sm text-slate-500 font-medium mt-1.5 max-w-md">
+              Drag & drop your food meal photo here, or click to browse files (JPG, PNG, WEBP)
+            </span>
+            <div className="mt-5 px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 shadow-xs group-hover:border-emerald-300 group-hover:text-emerald-700 transition-colors">
+              Browse Files
             </div>
           </div>
 
@@ -205,13 +180,6 @@ export const FoodScannerPage: React.FC = () => {
 
       {/* Result Display */}
       {scanResult && <ScannerResultCard result={scanResult} onReset={handleReset} />}
-
-      {/* Camera Capture Modal */}
-      <CameraCaptureModal
-        isOpen={isCameraOpen}
-        onClose={() => setIsCameraOpen(false)}
-        onCapture={handleCameraCapture}
-      />
     </div>
   );
 };

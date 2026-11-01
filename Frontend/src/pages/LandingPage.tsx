@@ -404,11 +404,19 @@ export const LandingPage: React.FC = () => {
 
       {/* Footer Disclaimer */}
       <footer className="mt-auto bg-white border-t border-slate-200 px-6 py-8 text-center text-slate-500 text-xs sm:text-sm">
-        <div className="max-w-5xl mx-auto flex items-center justify-center space-x-2">
-          <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
-          <span>
-            AI Health & Nutrition Engine. Provides general health and nutrition information for educational purposes only. Not a substitute for medical advice.
-          </span>
+        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center space-x-2 text-left">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+            <span>
+              AI Health & Nutrition Engine. Provides general health and nutrition information for educational purposes only. Not a substitute for medical advice.
+            </span>
+          </div>
+          <Link
+            to="/admin/login"
+            className="text-xs font-semibold text-slate-400 hover:text-emerald-600 transition shrink-0 whitespace-nowrap"
+          >
+            Admin Portal &rarr;
+          </Link>
         </div>
       </footer>
     </div>

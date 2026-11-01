@@ -30,7 +30,7 @@ export interface SleepReminderSchedule {
 export interface DailyHealthTipSchedule {
   enabled: boolean;
   preferredTime: string;  // e.g. "09:00"
-  preferredCategory?: string; // "general" | "nutrition" | "fitness" | "hydration" | "mindfulness"
+  preferredCategory?: string; // "general" | "nutrition" | "fitness" | "hydration" | "mindfulness" | "sleep"
 }
 
 export interface ReminderSettings {

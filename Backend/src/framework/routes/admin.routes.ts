@@ -37,8 +37,29 @@ const adminController = new AdminController(
   deleteUserUseCase
 );
 
-// Public Admin Login Route
+// Public Admin Login & Information Routes
 router.post('/login', adminController.login);
+
+// Handle GET /login gracefully: browser visits get redirected to the frontend Admin Login page (/admin/login)
+router.get('/login', (req, res) => {
+  if (req.accepts('html')) {
+    return res.redirect('/admin/login');
+  }
+  return res.status(405).json({
+    success: false,
+    message: 'Admin login endpoint accepts POST requests only with JSON body { email, password }. For the web portal, please navigate to /admin/login.',
+  });
+});
+
+router.get('/', (req, res) => {
+  if (req.accepts('html')) {
+    return res.redirect('/admin/login');
+  }
+  return res.status(200).json({
+    success: true,
+    message: 'NutriAI Admin API service active. Web portal available at /admin/login.',
+  });
+});
 
 // Protected Admin Routes
 router.use(authenticateJwt, requireRole('admin'));
