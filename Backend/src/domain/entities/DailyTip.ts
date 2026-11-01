@@ -1,4 +1,4 @@
-export type TipCategory = 'general' | 'nutrition' | 'fitness' | 'hydration' | 'mindfulness';
+export type TipCategory = 'general' | 'nutrition' | 'fitness' | 'hydration' | 'mindfulness' | 'sleep';
 
 export interface DailyTip {
   id?: string;
