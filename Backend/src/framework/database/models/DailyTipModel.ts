@@ -15,7 +15,7 @@ const DailyTipSchema: Schema = new Schema(
     category: {
       type: String,
       required: true,
-      enum: ['general', 'nutrition', 'fitness', 'hydration', 'mindfulness'],
+      enum: ['general', 'nutrition', 'fitness', 'hydration', 'mindfulness', 'sleep'],
       default: 'general',
       index: true,
     },

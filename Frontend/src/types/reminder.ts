@@ -45,7 +45,7 @@ export interface ReminderSettings {
   soundEnabled: boolean;
 }
 
-export type TipCategory = 'general' | 'nutrition' | 'fitness' | 'hydration' | 'mindfulness';
+export type TipCategory = 'general' | 'nutrition' | 'fitness' | 'hydration' | 'mindfulness' | 'sleep';
 
 export interface DailyHealthTip {
   id?: string;
