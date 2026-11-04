@@ -21,7 +21,37 @@ export interface FoodAlternativeComparisonData {
   healthBenefit: string;
 }
 
+export interface ScannedFoodItem {
+  name: string;
+  estimatedQuantity: string;
+  estimatedCalories: number;
+  protein: number;
+  carbohydrates: number;
+  fat: number;
+  fiber?: number;
+  confidence: 'high' | 'medium' | 'low' | string;
+  visibleIngredients?: string[];
+  inferredIngredients?: string[];
+  potentialAllergens?: string[];
+}
+
+export interface TotalNutritionData {
+  calories: number;
+  protein: number;
+  carbohydrates: number;
+  fat: number;
+  fiber?: number;
+}
+
 export interface ScanResultData {
+  isFood: boolean;
+  message?: string;
+  isUnclear?: boolean;
+  foodItems?: ScannedFoodItem[];
+  totalNutrition?: TotalNutritionData | null;
+  analysis?: string;
+  limitations?: string[];
+
   foodName: string;
   confidence: number;
   portionEstimate: string;

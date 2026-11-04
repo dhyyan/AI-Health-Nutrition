@@ -6,6 +6,7 @@ import { IWeightBmiLogRepository } from '../../domain/interfaces/repositories/IW
 import { UserDashboardDTO, DashboardRecommendationItem } from '../../domain/interfaces/DTOs/HealthReportDTOs';
 import { GeneratePersonalizedRecommendationsUseCase } from '../recommendation/GeneratePersonalizedRecommendationsUseCase';
 import { FoodLog } from '../../domain/entities/FoodLog';
+import { AllergyValidationService } from '../../framework/services/allergy/AllergyValidationService';
 
 export class GetUserDashboardUseCase {
   constructor(
@@ -192,13 +193,23 @@ export class GetUserDashboardUseCase {
 
     // Nutrition & Protein suggestion
     if (proteinConsumed < proteinTarget * 0.7) {
+      const userAllergies = healthProfile?.foodAllergies || [];
+      const allergyService = new AllergyValidationService();
+      const candidateProteins = ['chicken breast', 'eggs', 'firm tofu', 'Greek yogurt', 'lentils', 'salmon', 'chickpeas', 'hemp hearts'];
+      const safeProteins = candidateProteins.filter((item) => {
+        return allergyService.checkTextForRestrictedAllergens(item, userAllergies).isValid;
+      });
+      const proteinText = safeProteins.length > 0
+        ? safeProteins.slice(0, 3).join(', ')
+        : 'allergen-safe plant proteins';
+
       aiRecommendations.push({
         id: 'rec-prot-1',
         category: 'nutrition',
         title: 'Boost Protein Intake',
         suggestion: `Your protein is currently ${Math.round(
           proteinTarget - proteinConsumed
-        )}g below your target of ${proteinTarget}g. Add chicken breast, eggs, tofu, or Greek yogurt to your next meal.`,
+        )}g below your target of ${proteinTarget}g. Add ${proteinText} to your next meal.`,
         tag: 'Muscle & Repair',
         impactLevel: 'high',
       });

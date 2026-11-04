@@ -4,6 +4,8 @@ import { HealthProfileRepository } from '../../adapters/repositories/HealthProfi
 import { MongoFoodLogRepository } from '../../adapters/repositories/MongoFoodLogRepository';
 import { MongoFoodRepository } from '../../adapters/repositories/MongoFoodRepository';
 import { NutritionDatabaseService } from '../services/nutrition/NutritionDatabaseService';
+import { AllergyValidationService } from '../services/allergy/AllergyValidationService';
+import { GeminiAiService } from '../services/ai/GeminiAiService';
 import { GeneratePersonalizedRecommendationsUseCase } from '../../useCases/recommendation/GeneratePersonalizedRecommendationsUseCase';
 import { GetFoodAlternativesUseCase } from '../../useCases/recommendation/GetFoodAlternativesUseCase';
 import { RecommendationController } from '../../adapters/controllers/recommendation/RecommendationController';
@@ -15,15 +17,21 @@ const healthProfileRepository = new HealthProfileRepository();
 const foodLogRepository = new MongoFoodLogRepository();
 const foodRepository = new MongoFoodRepository();
 const nutritionDatabaseService = new NutritionDatabaseService(foodRepository);
+const allergyValidationService = new AllergyValidationService();
+const geminiAiService = new GeminiAiService();
 
 // Instantiate Use Cases
 const generatePersonalizedRecommendationsUseCase = new GeneratePersonalizedRecommendationsUseCase(
   healthProfileRepository,
-  foodLogRepository
+  foodLogRepository,
+  allergyValidationService,
+  geminiAiService
 );
 const getFoodAlternativesUseCase = new GetFoodAlternativesUseCase(
   nutritionDatabaseService,
-  healthProfileRepository
+  healthProfileRepository,
+  allergyValidationService,
+  geminiAiService
 );
 
 // Instantiate Controller

@@ -3,6 +3,7 @@ import { authenticateJwt, requireRole } from '../../adapters/middlewares/auth.mi
 import { MongoMealRepository } from '../../adapters/repositories/MongoMealRepository';
 import { MongoMealPlanRepository } from '../../adapters/repositories/MongoMealPlanRepository';
 import { HealthProfileRepository } from '../../adapters/repositories/HealthProfileRepository';
+import { AllergyValidationService } from '../services/allergy/AllergyValidationService';
 import { CreateMealUseCase } from '../../useCases/meal/CreateMealUseCase';
 import { GetAllMealsUseCase } from '../../useCases/meal/GetAllMealsUseCase';
 import { UpdateMealUseCase } from '../../useCases/meal/UpdateMealUseCase';
@@ -14,8 +15,9 @@ import { MealController } from '../../adapters/controllers/meal/MealController';
 
 const router = Router();
 
-// Instantiate Repositories
-const mealRepository = new MongoMealRepository();
+// Instantiate Repositories & Services
+const allergyValidationService = new AllergyValidationService();
+const mealRepository = new MongoMealRepository(allergyValidationService);
 const mealPlanRepository = new MongoMealPlanRepository();
 const healthProfileRepository = new HealthProfileRepository();
 
@@ -27,10 +29,21 @@ const deleteMealUseCase = new DeleteMealUseCase(mealRepository);
 const generateMealPlanUseCase = new GenerateMealPlanUseCase(
   mealRepository,
   mealPlanRepository,
-  healthProfileRepository
+  healthProfileRepository,
+  allergyValidationService
 );
-const getUserMealPlanUseCase = new GetUserMealPlanUseCase(mealPlanRepository, generateMealPlanUseCase);
-const swapMealOptionUseCase = new SwapMealOptionUseCase(mealRepository, mealPlanRepository);
+const getUserMealPlanUseCase = new GetUserMealPlanUseCase(
+  mealPlanRepository,
+  generateMealPlanUseCase,
+  healthProfileRepository,
+  allergyValidationService
+);
+const swapMealOptionUseCase = new SwapMealOptionUseCase(
+  mealRepository,
+  mealPlanRepository,
+  healthProfileRepository,
+  allergyValidationService
+);
 
 // Instantiate Controller
 const mealController = new MealController(

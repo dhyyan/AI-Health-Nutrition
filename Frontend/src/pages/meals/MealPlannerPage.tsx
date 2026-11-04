@@ -96,6 +96,26 @@ export const MealPlannerPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Strict Food Allergy Protection Banner */}
+      {mealPlan.excludedAllergies && mealPlan.excludedAllergies.length > 0 && (
+        <div className="bg-amber-50/90 border border-amber-200/90 rounded-2xl p-4 sm:p-5 flex items-start space-x-3.5 shadow-xs">
+          <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="space-y-1 text-xs sm:text-sm">
+            <div className="font-bold text-amber-900 flex items-center space-x-2">
+              <span>Allergy Protection Verified (7-Day Schedule)</span>
+              <span className="bg-amber-100 text-amber-800 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-amber-300">
+                {mealPlan.excludedAllergies.length} Restricted
+              </span>
+            </div>
+            <p className="text-amber-800 leading-relaxed">
+              Every meal across Monday through Sunday has been verified to strictly exclude:{' '}
+              <strong className="font-bold underline">{mealPlan.excludedAllergies.join(', ')}</strong>.
+              If you swap any meal, our validation engine automatically blocks any option containing these allergens.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* 7-Day Navigation Schedule Header */}
       <WeeklyPlanSchedule
         schedule={mealPlan.weeklySchedule}

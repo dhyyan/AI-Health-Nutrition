@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Camera, X, RefreshCw, Check, AlertCircle } from 'lucide-react';
+import { Camera, X, RefreshCw, Check, AlertCircle, Loader2, Upload } from 'lucide-react';
 
 interface CameraCaptureModalProps {
   isOpen: boolean;
@@ -14,44 +14,89 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [stream, setStream] = useState<MediaStream | null>(null);
+  const isMobile =
+    typeof navigator !== 'undefined' &&
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  const [facingMode, setFacingMode] = useState<'environment' | 'user'>(
+    isMobile ? 'environment' : 'user'
+  );
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [facingMode, setFacingMode] = useState<'environment' | 'user'>('environment');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [capturedDataUrl, setCapturedDataUrl] = useState<string | null>(null);
 
+  // Stable stopCamera without stream dependency re-renders
   const stopCamera = useCallback(() => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => {
+        try {
+          track.stop();
+        } catch (e) {
+          console.warn('Error stopping camera track:', e);
+        }
+      });
+      streamRef.current = null;
     }
-  }, [stream]);
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  }, []);
 
   const startCamera = useCallback(async () => {
     stopCamera();
     setCameraError(null);
     setCapturedDataUrl(null);
+    setIsLoading(true);
 
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode,
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-      });
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera access is not supported by this browser.');
+      }
 
-      setStream(mediaStream);
+      let mediaStream: MediaStream;
+
+      // Primary attempt with ideal constraints
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { ideal: facingMode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          audio: false,
+        });
+      } catch (primaryErr) {
+        console.warn('Initial facingMode camera constraint failed, attempting fallback to basic video:', primaryErr);
+        // Fallback for single-webcam laptops & desktops
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false,
+        });
+      }
+
+      streamRef.current = mediaStream;
+
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current?.play().catch((playErr) => {
+            console.warn('Video auto-play warning:', playErr);
+          });
+        };
+        videoRef.current.play().catch(() => {});
       }
     } catch (err: any) {
       console.error('Error starting camera stream:', err);
       setCameraError(
-        err.name === 'NotAllowedError'
-          ? 'Camera permission denied. Please allow camera access in your browser settings.'
-          : 'Unable to access device camera. Please check your camera hardware or select a file instead.'
+        err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError'
+          ? 'Camera permission denied. Please allow camera access in your browser address bar.'
+          : 'Unable to access device camera. Please check your webcam permissions or upload a photograph directly.'
       );
+    } finally {
+      setIsLoading(false);
     }
   }, [facingMode, stopCamera]);
 
@@ -80,7 +125,7 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
       setCapturedDataUrl(dataUrl);
     }
   };
@@ -88,7 +133,6 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   const handleConfirmCapture = () => {
     if (!capturedDataUrl) return;
 
-    // Convert dataUrl to Blob
     fetch(capturedDataUrl)
       .then((res) => res.blob())
       .then((blob) => {
@@ -103,10 +147,23 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 
   const handleRetake = () => {
     setCapturedDataUrl(null);
+    if (videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      videoRef.current.play().catch(() => {});
+    }
   };
 
   const toggleCameraFacing = () => {
     setFacingMode((prev) => (prev === 'environment' ? 'user' : 'environment'));
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      onCapture(file);
+      stopCamera();
+      onClose();
+    }
   };
 
   return (
@@ -131,16 +188,33 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 
         {/* Camera Stream Viewport */}
         <div className="relative flex-1 bg-black min-h-[320px] flex items-center justify-center overflow-hidden">
+          {isLoading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/70 z-20 space-y-3 text-white">
+              <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
+              <span className="text-xs font-semibold text-slate-300">Initializing camera...</span>
+            </div>
+          )}
+
           {cameraError ? (
-            <div className="p-6 text-center text-rose-300 space-y-3 max-w-xs">
+            <div className="p-6 text-center text-rose-300 space-y-4 max-w-xs z-10">
               <AlertCircle className="w-10 h-10 mx-auto text-rose-400" />
-              <p className="text-xs font-semibold">{cameraError}</p>
-              <button
-                onClick={startCamera}
-                className="px-4 py-2 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition-all"
-              >
-                Retry Camera
-              </button>
+              <p className="text-xs font-semibold leading-relaxed">{cameraError}</p>
+              <div className="flex flex-col gap-2 pt-2">
+                <button
+                  onClick={startCamera}
+                  className="px-4 py-2.5 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition-all flex items-center justify-center space-x-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  <span>Retry Camera</span>
+                </button>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-500 transition-all flex items-center justify-center space-x-2"
+                >
+                  <Upload className="w-4 h-4" />
+                  <span>Upload Photo from Device</span>
+                </button>
+              </div>
             </div>
           ) : capturedDataUrl ? (
             <img
@@ -156,6 +230,9 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                 playsInline
                 muted
                 className="w-full h-full object-cover"
+                onCanPlay={() => {
+                  videoRef.current?.play().catch(() => {});
+                }}
               />
               {/* Scan Overlay Guidelines */}
               <div className="absolute inset-0 border-2 border-dashed border-emerald-400/40 m-8 rounded-3xl pointer-events-none flex items-center justify-center">
@@ -167,6 +244,13 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
           )}
 
           <canvas ref={canvasRef} className="hidden" />
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={handleFileInputChange}
+          />
         </div>
 
         {/* Controls Bar */}
@@ -176,20 +260,27 @@ export const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               <button
                 onClick={toggleCameraFacing}
                 className="p-3 rounded-2xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-all"
-                title="Switch Camera"
+                title={`Switch camera (current: ${facingMode})`}
               >
                 <RefreshCw className="w-5 h-5" />
               </button>
 
               <button
                 onClick={handleSnap}
-                disabled={!!cameraError}
-                className="w-16 h-16 rounded-full bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/30 transition-all disabled:opacity-50"
+                disabled={!!cameraError || isLoading}
+                className="w-16 h-16 rounded-full bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Capture Photo"
               >
                 <Camera className="w-7 h-7" />
               </button>
 
-              <div className="w-11" /> {/* Spacer */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="p-3 rounded-2xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 transition-all"
+                title="Browse file from device"
+              >
+                <Upload className="w-5 h-5" />
+              </button>
             </>
           ) : (
             <div className="flex items-center space-x-3 w-full">

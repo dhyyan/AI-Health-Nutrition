@@ -17,15 +17,29 @@ import { ScanFoodImageUseCase } from '../../useCases/nutrition/ScanFoodImageUseC
 import { ScannerController } from '../../adapters/controllers/nutrition/ScannerController';
 
 import { HealthProfileRepository } from '../../adapters/repositories/HealthProfileRepository';
+import { AllergyValidationService } from '../services/allergy/AllergyValidationService';
+
+import { AppError } from '../../shared/errors/AppError';
 
 const router = Router();
-const upload = multer({ limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit
+const upload = multer({
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  fileFilter: (_req, file, cb) => {
+    const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (allowedMimes.includes(file.mimetype) || file.originalname.match(/\.(jpg|jpeg|png|webp)$/i)) {
+      cb(null, true);
+    } else {
+      cb(new AppError('Unsupported file format. Only JPEG, PNG, and WEBP images are supported.', 400));
+    }
+  },
+});
 
 // Dependency Injection Setup
 const foodRepository = new MongoFoodRepository();
 const foodLogRepository = new MongoFoodLogRepository();
 const healthProfileRepository = new HealthProfileRepository();
 const nutritionDatabaseService = new NutritionDatabaseService(foodRepository);
+const allergyValidationService = new AllergyValidationService();
 
 const searchFoodUseCase = new SearchFoodUseCase(nutritionDatabaseService);
 const getFoodDetailsUseCase = new GetFoodDetailsUseCase(nutritionDatabaseService);
@@ -38,7 +52,8 @@ const geminiFoodRecognitionService = new GeminiFoodRecognitionService();
 const scanFoodImageUseCase = new ScanFoodImageUseCase(
   geminiFoodRecognitionService,
   nutritionDatabaseService,
-  healthProfileRepository
+  healthProfileRepository,
+  allergyValidationService
 );
 const scannerController = new ScannerController(scanFoodImageUseCase);
 

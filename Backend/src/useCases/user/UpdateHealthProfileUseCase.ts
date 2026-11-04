@@ -1,15 +1,19 @@
 import { IUserRepository } from '../../domain/interfaces/repositories/IUserRepository';
 import { IHealthProfileRepository } from '../../domain/interfaces/repositories/IHealthProfileRepository';
 import { IWeightBmiLogRepository } from '../../domain/interfaces/repositories/IWeightBmiLogRepository';
+import { IMealPlanRepository } from '../../domain/interfaces/repositories/IMealPlanRepository';
 import { HealthProfile } from '../../domain/entities/HealthProfile';
 import { WeightBmiLog } from '../../domain/entities/WeightBmiLog';
 import { UpdateHealthProfileDTO, HealthProfileResponseDTO } from '../../domain/interfaces/DTOs/HealthProfileDTOs';
+import { GenerateMealPlanUseCase } from '../meal/GenerateMealPlanUseCase';
 
 export class UpdateHealthProfileUseCase {
   constructor(
     private userRepository: IUserRepository,
     private healthProfileRepository: IHealthProfileRepository,
-    private weightBmiLogRepository?: IWeightBmiLogRepository
+    private weightBmiLogRepository?: IWeightBmiLogRepository,
+    private mealPlanRepository?: IMealPlanRepository,
+    private generateMealPlanUseCase?: GenerateMealPlanUseCase
   ) {}
 
   async execute(userId: string, dto: UpdateHealthProfileDTO): Promise<HealthProfileResponseDTO> {
@@ -73,6 +77,21 @@ export class UpdateHealthProfileUseCase {
           date: todayDate,
         })
       );
+    }
+
+    // Invalidate or regenerate meal plan when allergies change so old plans never persist
+    if (this.generateMealPlanUseCase) {
+      try {
+        await this.generateMealPlanUseCase.execute(userId);
+      } catch (err) {
+        console.warn('Failed to auto-regenerate meal plan on profile update:', err);
+      }
+    } else if (this.mealPlanRepository) {
+      try {
+        await this.mealPlanRepository.deleteByUserId(userId);
+      } catch (err) {
+        console.warn('Failed to invalidate meal plan on profile update:', err);
+      }
     }
 
     return {

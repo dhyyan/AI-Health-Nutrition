@@ -11,6 +11,7 @@ import {
   ChevronRight,
   User,
   ShieldCheck,
+  ShieldAlert,
 } from 'lucide-react';
 import { useRecommendations } from '../../hooks/useRecommendations';
 import { GoalPlanCard } from '../../components/recommendations/GoalPlanCard';
@@ -99,6 +100,26 @@ export const RecommendationsPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Strict Food Allergy Protection Banner */}
+      {recommendations.excludedAllergies && recommendations.excludedAllergies.length > 0 && (
+        <div className="bg-rose-50/90 border border-rose-200 rounded-2xl p-4 sm:p-5 flex items-start space-x-3.5 shadow-xs">
+          <ShieldAlert className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+          <div className="space-y-1 text-xs sm:text-sm">
+            <div className="font-bold text-rose-900 flex items-center space-x-2">
+              <span>Strict Food Allergy Protection Active</span>
+              <span className="bg-rose-100 text-rose-800 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border border-rose-200">
+                {recommendations.excludedAllergies.length} Restricted
+              </span>
+            </div>
+            <p className="text-rose-700 leading-relaxed">
+              All AI food suggestions, alternatives, and portion guides strictly exclude:{' '}
+              <strong className="font-bold underline">{recommendations.excludedAllergies.join(', ')}</strong>.
+              Meals containing these ingredients, their derivatives, or unverified preparations are rejected by the backend validation engine.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Navigation Sub-Tabs */}
       <div className="flex items-center space-x-2.5 overflow-x-auto border-b border-slate-200 pb-3">

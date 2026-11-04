@@ -18,6 +18,8 @@ import {
   Repeat,
   HeartPulse,
   BookOpen,
+  Layers,
+  Eye,
 } from 'lucide-react';
 
 interface ScannerResultCardProps {
@@ -82,6 +84,7 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
   const nutritionLookup = result.nutritionLookup;
   const portionAdvice = result.portionAdvice;
   const healthierAlternatives = result.healthierAlternatives;
+  const foodItems = result.foodItems || [];
 
   return (
     <div className="bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden animate-in fade-in zoom-in-95 duration-300 space-y-0">
@@ -150,11 +153,21 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
 
         {/* Bottom Food Title Header */}
         <div className="absolute bottom-4 left-6 right-6 text-white">
+          <div className="flex items-center space-x-2 mb-1">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-[10px] font-black uppercase tracking-wider border border-emerald-400/40">
+              AI Visual Analysis
+            </span>
+            {foodItems.length > 1 && (
+              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/30 text-sky-300 text-[10px] font-black uppercase tracking-wider border border-sky-400/40">
+                {foodItems.length} Food Items Detected
+              </span>
+            )}
+          </div>
           <h2 className="text-2xl sm:text-3xl font-black font-outfit tracking-tight">
             {result.foodName}
           </h2>
           <p className="text-xs text-slate-300 font-medium mt-1">
-            Portion Estimate: {result.portionEstimate}
+            Portion Estimate: {result.portionEstimate} (Visual Estimate)
           </p>
         </div>
       </div>
@@ -162,10 +175,10 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
       {/* Main Content Body */}
       <div className="p-6 space-y-6">
         {/* ---------------------------------------------------- */}
-        {/* STEP 4: ALLERGEN & MEDICAL ALERTS (If applicable) */}
+        {/* ALLERGEN & MEDICAL ALERTS */}
         {/* ---------------------------------------------------- */}
-        {suitability?.hasAllergenAlert && (
-          <div className="p-4 bg-rose-50 border-2 border-rose-300 rounded-2xl text-rose-900 flex items-start space-x-3 shadow-sm">
+        {suitability?.hasAllergenAlert ? (
+          <div className="p-4 bg-rose-50 border-2 border-rose-300 rounded-2xl text-rose-900 flex items-start space-x-3 shadow-sm animate-in fade-in">
             <ShieldAlert className="w-6 h-6 text-rose-600 shrink-0 mt-0.5" />
             <div className="space-y-1">
               <h4 className="font-extrabold text-xs uppercase tracking-wider text-rose-700">
@@ -176,9 +189,19 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
                   <li key={idx}>• {alert}</li>
                 ))}
               </ul>
-              <p className="text-[11px] text-rose-600 font-medium">
-                Matched against your saved profile allergies ({profileMatching?.userAllergies.join(', ')}).
+              <p className="text-[11px] text-rose-700 font-medium pt-1">
+                Matched against your saved allergies ({profileMatching?.userAllergies.join(', ')}).
               </p>
+            </div>
+          </div>
+        ) : (
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-start space-x-2.5 text-xs text-slate-600">
+            <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+            <div>
+              <span className="font-bold text-slate-700">Allergen Safety Notice: </span>
+              <span>
+                Visual AI analysis cannot guarantee the complete absence of allergens or cross-contamination. Hidden cooking oils (such as peanut or sesame), marinades, and microscopic traces cannot be detected visually. Always verify ingredients if you have food allergies.
+              </span>
             </div>
           </div>
         )}
@@ -195,6 +218,91 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
                   <li key={idx}>{med}</li>
                 ))}
               </ul>
+            </div>
+          </div>
+        )}
+
+        {/* ---------------------------------------------------- */}
+        {/* MULTIPLE FOOD ITEMS ITEMIZATION (If available) */}
+        {/* ---------------------------------------------------- */}
+        {foodItems.length > 0 && (
+          <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center space-x-1.5">
+                <Layers className="w-4 h-4 text-emerald-600" />
+                <span>Recognized Food Items ({foodItems.length})</span>
+              </h4>
+              <span className="text-[11px] font-semibold text-slate-500">
+                Individual Component Breakdown
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {foodItems.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="p-3.5 bg-white rounded-xl border border-slate-200 shadow-2xs space-y-2"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h5 className="font-extrabold text-slate-900 text-xs sm:text-sm">
+                        {item.name}
+                      </h5>
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        Portion: {item.estimatedQuantity}
+                      </span>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-xs font-black">
+                      ~{item.estimatedCalories} kcal
+                    </span>
+                  </div>
+
+                  <div className="flex items-center space-x-3 text-[11px] text-slate-600 font-semibold border-t border-slate-100 pt-2">
+                    <span>Protein: {item.protein}g</span>
+                    <span>•</span>
+                    <span>Carbs: {item.carbohydrates}g</span>
+                    <span>•</span>
+                    <span>Fat: {item.fat}g</span>
+                    {typeof item.fiber === 'number' && item.fiber > 0 && (
+                      <>
+                        <span>•</span>
+                        <span>Fiber: {item.fiber}g</span>
+                      </>
+                    )}
+                  </div>
+
+                  {item.visibleIngredients && item.visibleIngredients.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1 text-[10px]">
+                      <span className="font-bold text-slate-500 flex items-center space-x-1">
+                        <Eye className="w-2.5 h-2.5 text-emerald-600" />
+                        <span>Visible:</span>
+                      </span>
+                      {item.visibleIngredients.map((v, i) => (
+                        <span
+                          key={i}
+                          className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium"
+                        >
+                          {v}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {item.inferredIngredients && item.inferredIngredients.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1 text-[10px]">
+                      <span className="font-bold text-slate-400">Inferred/Sauces:</span>
+                      {item.inferredIngredients.map((inf, i) => (
+                        <span
+                          key={i}
+                          className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200 font-medium"
+                        >
+                          {inf}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -379,42 +487,52 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
           )}
         </div>
 
-        {/* Dynamic Macros Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-center">
-            <div className="flex items-center justify-center space-x-1 text-amber-600 mb-1">
-              <Flame className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase">Calories</span>
-            </div>
-            <div className="text-xl font-black text-slate-900 font-outfit">{scaledCalories}</div>
-            <div className="text-[10px] text-slate-400 font-semibold">kcal</div>
+        {/* Dynamic Macros Grid (Labeled as Visual Estimates) */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">
+              Estimated Total Nutrition Breakdown
+            </span>
+            <span className="text-[11px] text-slate-400 font-medium">
+              *All values are visual AI estimates
+            </span>
           </div>
-
-          <div className="p-3.5 rounded-2xl bg-sky-50/80 border border-sky-200 text-center">
-            <div className="flex items-center justify-center space-x-1 text-sky-600 mb-1">
-              <PieChart className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase">Protein</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-center">
+              <div className="flex items-center justify-center space-x-1 text-amber-600 mb-1">
+                <Flame className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase">Calories</span>
+              </div>
+              <div className="text-xl font-black text-slate-900 font-outfit">{scaledCalories}</div>
+              <div className="text-[10px] text-slate-400 font-semibold">kcal (estimated)</div>
             </div>
-            <div className="text-xl font-black text-slate-900 font-outfit">{scaledProtein}g</div>
-            <div className="text-[10px] text-slate-400 font-semibold">grams</div>
-          </div>
 
-          <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-center">
-            <div className="flex items-center justify-center space-x-1 text-amber-600 mb-1">
-              <PieChart className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase">Carbs</span>
+            <div className="p-3.5 rounded-2xl bg-sky-50/80 border border-sky-200 text-center">
+              <div className="flex items-center justify-center space-x-1 text-sky-600 mb-1">
+                <PieChart className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase">Protein</span>
+              </div>
+              <div className="text-xl font-black text-slate-900 font-outfit">{scaledProtein}g</div>
+              <div className="text-[10px] text-slate-400 font-semibold">grams (estimated)</div>
             </div>
-            <div className="text-xl font-black text-slate-900 font-outfit">{scaledCarbs}g</div>
-            <div className="text-[10px] text-slate-400 font-semibold">grams</div>
-          </div>
 
-          <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 text-center">
-            <div className="flex items-center justify-center space-x-1 text-rose-600 mb-1">
-              <PieChart className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase">Fat</span>
+            <div className="p-3.5 rounded-2xl bg-amber-50/80 border border-amber-200 text-center">
+              <div className="flex items-center justify-center space-x-1 text-amber-600 mb-1">
+                <PieChart className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase">Carbs</span>
+              </div>
+              <div className="text-xl font-black text-slate-900 font-outfit">{scaledCarbs}g</div>
+              <div className="text-[10px] text-slate-400 font-semibold">grams (estimated)</div>
             </div>
-            <div className="text-xl font-black text-slate-900 font-outfit">{scaledFat}g</div>
-            <div className="text-[10px] text-slate-400 font-semibold">grams</div>
+
+            <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200 text-center">
+              <div className="flex items-center justify-center space-x-1 text-rose-600 mb-1">
+                <PieChart className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase">Fat</span>
+              </div>
+              <div className="text-xl font-black text-slate-900 font-outfit">{scaledFat}g</div>
+              <div className="text-[10px] text-slate-400 font-semibold">grams (estimated)</div>
+            </div>
           </div>
         </div>
 
@@ -479,6 +597,21 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
           </div>
         )}
 
+        {/* AI Limitations Section */}
+        {result.limitations && result.limitations.length > 0 && (
+          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
+            <h5 className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center space-x-1.5">
+              <Info className="w-3.5 h-3.5 text-slate-500" />
+              <span>AI Visual Analysis Scope & Limitations</span>
+            </h5>
+            <ul className="text-xs text-slate-500 space-y-1 pl-4 list-disc font-medium">
+              {result.limitations.map((limit, idx) => (
+                <li key={idx}>{limit}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {/* Action Controls */}
         <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
           <button
@@ -527,4 +660,3 @@ export const ScannerResultCard: React.FC<ScannerResultCardProps> = ({ result, on
     </div>
   );
 };
-

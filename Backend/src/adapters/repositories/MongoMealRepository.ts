@@ -2,8 +2,16 @@ import { IMealRepository, MealFilterOptions } from '../../domain/interfaces/repo
 import { Meal, CreateMealDTO, UpdateMealDTO, MealType, DietaryPreference } from '../../domain/entities/Meal';
 import { HealthGoal } from '../../domain/entities/HealthProfile';
 import { MealModel, IMealDocument } from '../../framework/database/models/MealModel';
+import { IAllergyValidationService } from '../../domain/interfaces/services/IAllergyValidationService';
+import { AllergyValidationService } from '../../framework/services/allergy/AllergyValidationService';
 
 export class MongoMealRepository implements IMealRepository {
+  private allergyValidator: IAllergyValidationService;
+
+  constructor(allergyValidator?: IAllergyValidationService) {
+    this.allergyValidator = allergyValidator || new AllergyValidationService();
+  }
+
   private mapDocumentToEntity(doc: IMealDocument): Meal {
     return {
       id: doc._id.toString(),
@@ -52,9 +60,6 @@ export class MongoMealRepository implements IMealRepository {
     if (options.dietaryPreference) {
       query.dietaryPreference = options.dietaryPreference;
     }
-    if (options.excludeAllergens && options.excludeAllergens.length > 0) {
-      query.allergens = { $nin: options.excludeAllergens };
-    }
     if (options.search && options.search.trim()) {
       query.name = { $regex: options.search.trim(), $options: 'i' };
     }
@@ -63,7 +68,14 @@ export class MongoMealRepository implements IMealRepository {
       .limit(options.limit || 100)
       .sort({ createdAt: -1 });
 
-    return docs.map((doc) => this.mapDocumentToEntity(doc));
+    const meals = docs.map((doc) => this.mapDocumentToEntity(doc));
+
+    if (options.excludeAllergens && options.excludeAllergens.length > 0) {
+      const { valid } = this.allergyValidator.filterMeals(meals, options.excludeAllergens);
+      return valid;
+    }
+
+    return meals;
   }
 
   async update(id: string, mealData: UpdateMealDTO): Promise<Meal | null> {
@@ -96,13 +108,31 @@ export class MongoMealRepository implements IMealRepository {
       }
     }
 
+    // Pre-filter at MongoDB query level using known aliases for excluded allergens
     if (excludeAllergens && excludeAllergens.length > 0) {
-      // Exclude meals containing any of the excluded allergens (case insensitive match)
-      const allergenRegexes = excludeAllergens.map((a) => new RegExp(`^${a.trim()}$`, 'i'));
-      query.allergens = { $nin: allergenRegexes };
+      const allAliases: string[] = [];
+      for (const allergy of excludeAllergens) {
+        const aliases = this.allergyValidator.getAllergenAliases(allergy);
+        allAliases.push(...aliases);
+      }
+      const uniqueAliases = Array.from(new Set(allAliases));
+      if (uniqueAliases.length > 0) {
+        const regexList = uniqueAliases.map((a) => new RegExp(`\\b${a.trim()}\\b`, 'i'));
+        // Exclude meals where allergens array matches any alias
+        query.allergens = { $nin: regexList };
+      }
     }
 
-    const docs = await MealModel.find(query).limit(50);
-    return docs.map((doc) => this.mapDocumentToEntity(doc));
+    const docs = await MealModel.find(query).limit(100);
+    const candidateMeals = docs.map((doc) => this.mapDocumentToEntity(doc));
+
+    // STRICT LAYER 2 BACKEND ENFORCEMENT:
+    // Run all candidates through AllergyValidationService to inspect name, ingredients, instructions
+    if (excludeAllergens && excludeAllergens.length > 0) {
+      const { valid } = this.allergyValidator.filterMeals(candidateMeals, excludeAllergens);
+      return valid;
+    }
+
+    return candidateMeals;
   }
 }

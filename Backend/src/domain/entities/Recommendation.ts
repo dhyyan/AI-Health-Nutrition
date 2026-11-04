@@ -110,4 +110,6 @@ export interface PersonalizedRecommendations {
   topAlternatives: FoodAlternativeComparison[];
   disclaimer: string;
   generatedAt: Date;
+  excludedAllergies?: string[];
+  allergenSafetyNotice?: string;
 }
