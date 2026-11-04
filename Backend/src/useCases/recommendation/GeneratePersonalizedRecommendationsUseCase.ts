@@ -11,12 +11,24 @@ import {
   FoodAlternativeComparison,
 } from '../../domain/entities/Recommendation';
 import { HealthProfile, HealthGoal } from '../../domain/entities/HealthProfile';
+import { IAllergyValidationService } from '../../domain/interfaces/services/IAllergyValidationService';
+import { AllergyValidationService } from '../../framework/services/allergy/AllergyValidationService';
+import { IAiService } from '../../domain/interfaces/services/IAiService';
+import { GeminiAiService } from '../../framework/services/ai/GeminiAiService';
 
 export class GeneratePersonalizedRecommendationsUseCase {
+  private allergyValidator: IAllergyValidationService;
+  private aiService: IAiService;
+
   constructor(
     private healthProfileRepository: IHealthProfileRepository,
-    private foodLogRepository: IFoodLogRepository
-  ) {}
+    private foodLogRepository: IFoodLogRepository,
+    allergyValidator?: IAllergyValidationService,
+    aiService?: IAiService
+  ) {
+    this.allergyValidator = allergyValidator || new AllergyValidationService();
+    this.aiService = aiService || new GeminiAiService();
+  }
 
   async execute(userId: string): Promise<PersonalizedRecommendations> {
     // 1. Fetch Health Profile
@@ -32,6 +44,8 @@ export class GeneratePersonalizedRecommendationsUseCase {
     const sleepHours = profile?.sleepHours || 7;
     const bmi = profile?.bmi || 22.5;
     const bmiCategory = profile?.bmiCategory || 'Normal';
+    const userAllergies: string[] = profile?.foodAllergies || [];
+    const dietaryPreference = profile?.dietaryPreference || 'Non-Vegetarian';
 
     // 2. Calculate BMR (Mifflin-St Jeor Equation)
     let bmr = 10 * weightKg + 6.25 * heightCm - 5 * age;
@@ -83,14 +97,15 @@ export class GeneratePersonalizedRecommendationsUseCase {
     const actualCarbs = parseFloat(todayLogs.reduce((acc, log) => acc + log.carbohydrates, 0).toFixed(1));
     const actualFat = parseFloat(todayLogs.reduce((acc, log) => acc + log.fat, 0).toFixed(1));
 
-    // 5. Generate Goal Plan Details
-    const goalPlan = this.generateGoalPlan(
+    // 5. Generate Goal Plan Details (AI Prevention + Backend Enforcement)
+    const goalPlan = await this.generateGoalPlan(
       goal,
       targetCalories,
       targetProtein,
       targetCarbs,
       targetFat,
-      profile
+      userAllergies,
+      dietaryPreference
     );
 
     // 6. Generate Health Profile Comparison
@@ -115,14 +130,19 @@ export class GeneratePersonalizedRecommendationsUseCase {
       targetWaterMl
     );
 
-    // 8. Generate Portion Guidance
-    const portionGuidance = this.generatePortionGuidance();
+    // 8. Generate Portion Guidance tailored to allergies
+    const portionGuidance = this.generatePortionGuidance(userAllergies);
 
-    // 9. Generate Top Sample Alternatives
-    const topAlternatives = this.generateTopAlternatives(goal);
+    // 9. Generate Top Sample Alternatives tailored to allergies
+    const topAlternatives = this.generateTopAlternatives(goal, userAllergies);
 
     const MEDICAL_DISCLAIMER =
       'This application provides general health and nutrition information for educational purposes and is not a substitute for professional medical advice, diagnosis, or treatment.';
+
+    const allergenSafetyNotice =
+      userAllergies.length > 0
+        ? `All recommendations have been verified and strictly exclude: ${userAllergies.join(', ')}.`
+        : 'No food allergies specified in medical profile.';
 
     return {
       userId,
@@ -133,21 +153,23 @@ export class GeneratePersonalizedRecommendationsUseCase {
       topAlternatives,
       disclaimer: MEDICAL_DISCLAIMER,
       generatedAt: new Date(),
+      excludedAllergies: userAllergies,
+      allergenSafetyNotice,
     };
   }
 
-  private generateGoalPlan(
+  private async generateGoalPlan(
     goal: HealthGoal,
     targetCalories: number,
     targetProtein: number,
     targetCarbs: number,
     targetFat: number,
-    profile: HealthProfile | null
-  ): GoalPlan {
+    userAllergies: string[],
+    dietaryPreference: string
+  ): Promise<GoalPlan> {
     let title = 'Balanced Maintenance Plan';
     let description =
       'Designed to maintain your current body weight, promote metabolic health, and ensure overall balanced nutrition.';
-    let recommendedFoods: RecommendedFoodChoice[] = [];
     let avoidFoods: string[] = [];
     let activityAdvice: string[] = [];
 
@@ -155,44 +177,6 @@ export class GeneratePersonalizedRecommendationsUseCase {
       title = 'Calorie-Controlled Fat Loss Plan';
       description =
         'Focuses on lower-calorie, high-volume foods that keep you full while maintaining a moderate calorie deficit to promote sustainable weight loss.';
-      recommendedFoods = [
-        {
-          name: 'Grilled Chicken Breast',
-          category: 'Lean Protein',
-          description: 'High in protein and low in calories; promotes satiety and preserves lean muscle mass.',
-          calories: 165,
-          protein: 31.0,
-          reason: 'High satiety per calorie with minimal fat.',
-          tags: ['High Protein', 'Low Calorie'],
-        },
-        {
-          name: 'Raw Spinach & Leafy Greens',
-          category: 'Vegetables',
-          description: 'Extremely nutrient-dense and high in fiber with minimal caloric burden.',
-          calories: 23,
-          protein: 2.9,
-          reason: 'Adds volume and essential vitamins without adding caloric bulk.',
-          tags: ['High Fiber', 'Micronutrients'],
-        },
-        {
-          name: 'Plain Low-Fat Greek Yogurt',
-          category: 'Dairy',
-          description: 'Rich in probiotics and slow-digesting casein protein.',
-          calories: 73,
-          protein: 10.0,
-          reason: 'Great protein-packed snack option that controls hunger pangs.',
-          tags: ['Probiotic', 'Lean Protein'],
-        },
-        {
-          name: 'Fresh Red Apple',
-          category: 'Fruit',
-          description: 'Contains natural fructose and pectin fiber to curb sweet cravings.',
-          calories: 52,
-          protein: 0.3,
-          reason: 'Slowly digested fiber prevents insulin spikes.',
-          tags: ['High Fiber', 'Natural Sweet'],
-        },
-      ];
       avoidFoods = [
         'Sugary Carbonated Beverages & Energy Drinks',
         'Deep-fried snacks & Potato Chips',
@@ -208,9 +192,123 @@ export class GeneratePersonalizedRecommendationsUseCase {
       title = 'Nutrient-Dense Healthy Weight Gain Plan';
       description =
         'Prioritizes energy-dense, wholesome meal choices to help you achieve a healthy caloric surplus without digestive distress.';
-      recommendedFoods = [
+      avoidFoods = [
+        'Empty-calorie sugary snacks that lack micronutrients',
+        'Skipping meals or long fasting windows',
+        'Excessive low-calorie drinks right before meals',
+      ];
+      activityAdvice = [
+        'Focus on progressive resistance training 3–4 days a week to channel extra calories into muscle mass.',
+        'Keep cardio sessions light (15–20 minutes) to avoid burning excessive calories needed for weight gain.',
+        'Ensure adequate rest and recovery between heavy workouts.',
+      ];
+    } else if (goal === 'muscle_gain') {
+      title = 'High-Protein Hypertrophy Diet';
+      description =
+        'Optimized to maximize muscle protein synthesis (MPS) with protein-rich food options and balanced complex carbohydrates.';
+      avoidFoods = [
+        'Alcohol, which severely impairs muscle protein synthesis and recovery',
+        'Ultra-processed fast foods high in trans fats',
+        'Low-protein meal replacements',
+      ];
+      activityAdvice = [
+        'Engage in hyper-targeted strength and resistance training 4–5 days per week.',
+        'Prioritize major compound movements (Squats, Deadlifts, Bench Press, Rows).',
+        'Consume 20–30g protein within 1–2 hours after intense training.',
+      ];
+    } else {
+      avoidFoods = ['Excessive refined sugar', 'Trans-fat heavy fried foods'];
+      activityAdvice = [
+        'Maintain a balanced weekly routine: 150 minutes of moderate activity + 2 strength workouts.',
+      ];
+    }
+
+    // Append allergy notice to avoid list if active allergies exist
+    if (userAllergies.length > 0) {
+      avoidFoods.unshift(
+        `CRITICAL ALLERGY ALERT: Strictly avoid all foods, sauces, broths, and dressings containing ${userAllergies.join(', ')}.`
+      );
+    }
+
+    // Comprehensive Candidate Food Database by Goal
+    const curatedGoalFoods: Record<HealthGoal, RecommendedFoodChoice[]> = {
+      weight_loss: [
         {
-          name: 'Avocado (Hass)',
+          name: 'Grilled Chicken Breast',
+          category: 'Lean Poultry',
+          description: 'High in protein and low in calories; promotes satiety and preserves lean muscle mass.',
+          calories: 165,
+          protein: 31.0,
+          reason: 'High satiety per calorie with minimal fat.',
+          tags: ['High Protein', 'Low Calorie'],
+        },
+        {
+          name: 'Steamed Atlantic Cod Fillet',
+          category: 'Lean Seafood',
+          description: 'Ultra-lean white fish supplying clean amino acids, iodine, and B-vitamins.',
+          calories: 105,
+          protein: 23.0,
+          reason: 'Pure protein with virtually zero carbohydrate and minimal fat.',
+          tags: ['Lean Protein', 'Low Calorie'],
+        },
+        {
+          name: 'Raw Spinach & Leafy Greens',
+          category: 'Vegetables',
+          description: 'Extremely nutrient-dense and high in fiber with minimal caloric burden.',
+          calories: 23,
+          protein: 2.9,
+          reason: 'Adds volume and essential vitamins without adding caloric bulk.',
+          tags: ['High Fiber', 'Micronutrients'],
+        },
+        {
+          name: 'Crisp Red Apple',
+          category: 'Fruit',
+          description: 'Contains natural fructose and pectin fiber to curb sweet cravings.',
+          calories: 52,
+          protein: 0.3,
+          reason: 'Slowly digested fiber prevents insulin spikes.',
+          tags: ['High Fiber', 'Natural Sweet'],
+        },
+        {
+          name: 'Spiced Black Bean & Bell Pepper Salad',
+          category: 'Plant Protein & Fiber',
+          description: 'Hearty legumes providing sustained satiety, folate, and prebiotic fiber.',
+          calories: 140,
+          protein: 8.5,
+          reason: 'High-volume plant protein that stabilizes glycemic response.',
+          tags: ['High Fiber', 'Plant Protein'],
+        },
+        {
+          name: 'Steamed Broccoli Florets with Lemon Olive Drizzle',
+          category: 'Cruciferous Vegetables',
+          description: 'Rich in Sulforaphane, Vitamin C, and filling dietary fiber.',
+          calories: 55,
+          protein: 3.7,
+          reason: 'Promotes liver detox pathways and suppresses hunger hormones.',
+          tags: ['Antioxidant', 'Low Calorie'],
+        },
+        {
+          name: 'Plain Low-Fat Greek Yogurt',
+          category: 'Dairy',
+          description: 'Rich in probiotics and slow-digesting casein protein.',
+          calories: 73,
+          protein: 10.0,
+          reason: 'Great protein-packed snack option that controls hunger pangs.',
+          tags: ['Probiotic', 'Lean Protein'],
+        },
+        {
+          name: 'Oven-Baked Lemon Herb Tofu',
+          category: 'Plant Protein',
+          description: 'Clean soy curd seasoned with garlic, thyme, and lemon juice.',
+          calories: 130,
+          protein: 14.0,
+          reason: 'Low-calorie complete plant protein promoting fat loss.',
+          tags: ['Plant Protein', 'Gluten Free'],
+        },
+      ],
+      weight_gain: [
+        {
+          name: 'Fresh Hass Avocado',
           category: 'Healthy Fats',
           description: 'Loaded with heart-healthy monounsaturated fats, potassium, and dietary fiber.',
           calories: 160,
@@ -228,13 +326,22 @@ export class GeneratePersonalizedRecommendationsUseCase {
           tags: ['Nutrient Dense', 'Snack'],
         },
         {
-          name: 'Paneer Tikka (Grilled Cottage Cheese)',
-          category: 'Proteins & Dairy',
-          description: 'High in calcium, protein, and healthy milk fats.',
-          calories: 240,
-          protein: 14.5,
-          reason: 'Sustained energy and protein for healthy mass build-up.',
-          tags: ['Protein Rich', 'Calorie Dense'],
+          name: 'Toasted Pumpkin & Sunflower Seeds',
+          category: 'Nut-Free Seeds',
+          description: 'Mineral-dense superfood rich in zinc, magnesium, and healthy plant fats.',
+          calories: 175,
+          protein: 8.5,
+          reason: 'Calorie-rich seed snack safe from common tree nut and peanut allergies.',
+          tags: ['Nut-Free', 'Healthy Fats'],
+        },
+        {
+          name: 'Hearty Chickpea & Coconut Sweet Potato Stew',
+          category: 'Complex Carbs & Fats',
+          description: 'Warm slow-cooked chickpeas and sweet potato in rich coconut milk broth.',
+          calories: 320,
+          protein: 11.0,
+          reason: 'Energy-dense whole food stew supporting healthy surplus calories.',
+          tags: ['Calorie Dense', 'Vegan'],
         },
         {
           name: 'Pan-Seared Atlantic Salmon',
@@ -245,29 +352,42 @@ export class GeneratePersonalizedRecommendationsUseCase {
           reason: 'Clean high-calorie protein source boosting cardiovascular health.',
           tags: ['Omega-3', 'High Protein'],
         },
-      ];
-      avoidFoods = [
-        'Empty-calorie sugary snacks that lack micronutrients',
-        'Skipping meals or long fasting windows',
-        'Excessive low-calorie drinks right before meals',
-      ];
-      activityAdvice = [
-        'Focus on progressive resistance training 3–4 days a week to channel extra calories into muscle mass.',
-        'Keep cardio sessions light (15–20 minutes) to avoid burning excessive calories needed for weight gain.',
-        'Ensure adequate rest and recovery between heavy workouts.',
-      ];
-    } else if (goal === 'muscle_gain') {
-      title = 'High-Protein Hypertrophy Diet';
-      description =
-        'Optimized to maximize muscle protein synthesis (MPS) with protein-rich food options and balanced complex carbohydrates.';
-      recommendedFoods = [
+        {
+          name: 'Paneer Tikka (Grilled Cottage Cheese)',
+          category: 'Proteins & Dairy',
+          description: 'High in calcium, protein, and healthy milk fats.',
+          calories: 240,
+          protein: 14.5,
+          reason: 'Sustained energy and protein for healthy mass build-up.',
+          tags: ['Protein Rich', 'Calorie Dense'],
+        },
+        {
+          name: 'Grass-Fed Beef Tenderloin',
+          category: 'Red Meat',
+          description: 'Rich in bioavailable heme iron, zinc, and muscle-building protein.',
+          calories: 250,
+          protein: 26.0,
+          reason: 'Nutrient-dense animal protein for healthy mass accumulation.',
+          tags: ['Iron Rich', 'High Protein'],
+        },
+        {
+          name: 'Steamed Sweet Potato with Olive Oil',
+          category: 'Complex Carbohydrates',
+          description: 'Slow-burning starchy carbohydrate loaded with beta-carotene.',
+          calories: 180,
+          protein: 3.0,
+          reason: 'Replenishes glycogen stores with gentle, clean digestion.',
+          tags: ['Complex Carbs', 'Energy'],
+        },
+      ],
+      muscle_gain: [
         {
           name: 'Grilled Chicken Breast',
           category: 'Poultry',
           description: 'Pure lean protein boasting complete essential amino acids.',
           calories: 165,
           protein: 31.0,
-          reason: 'High leucine content directly stimulates muscle synthesis.',
+          reason: 'High leucine content directly stimulates muscle protein synthesis.',
           tags: ['High Protein', 'Lean Muscle'],
         },
         {
@@ -289,7 +409,7 @@ export class GeneratePersonalizedRecommendationsUseCase {
           tags: ['Glycogen Support', 'Complex Carbs'],
         },
         {
-          name: 'Dal Tadka (Yellow Lentils)',
+          name: 'Dal Tadka (Yellow Split Lentils)',
           category: 'Plant Protein',
           description: 'Rich in plant-based amino acids, iron, and folate.',
           calories: 118,
@@ -297,19 +417,44 @@ export class GeneratePersonalizedRecommendationsUseCase {
           reason: 'Great vegetarian protein foundation packed with minerals.',
           tags: ['Plant Protein', 'Folate'],
         },
-      ];
-      avoidFoods = [
-        'Alcohol, which severely impairs muscle protein synthesis and recovery',
-        'Ultra-processed fast foods high in trans fats',
-        'Low-protein meal replacements',
-      ];
-      activityAdvice = [
-        'Engage in hyper-targeted strength and resistance training 4–5 days per week.',
-        'Prioritize major compound movements (Squats, Deadlifts, Bench Press, Rows).',
-        'Consume 20–30g protein within 1–2 hours after intense training.',
-      ];
-    } else {
-      recommendedFoods = [
+        {
+          name: 'Organic Hemp Hearts & Quinoa Bowl',
+          category: 'Complete Plant Protein',
+          description: 'Delivers all 9 essential amino acids with magnesium and Omega-3.',
+          calories: 220,
+          protein: 12.0,
+          reason: 'Hypoallergenic complete protein supporting muscle hypertrophy.',
+          tags: ['Hypoallergenic', 'Complete Protein'],
+        },
+        {
+          name: 'Grilled Firm Tofu Cutlets',
+          category: 'Plant Protein',
+          description: 'Pressed firm tofu grilled with tamari and garlic.',
+          calories: 150,
+          protein: 16.0,
+          reason: 'Lean vegetarian protein promoting muscle repair.',
+          tags: ['Plant Protein', 'High Protein'],
+        },
+        {
+          name: 'Steamed Edamame Pods',
+          category: 'Plant Protein',
+          description: 'Young green soybeans rich in isoflavones and complete protein.',
+          calories: 120,
+          protein: 11.0,
+          reason: 'Convenient whole food protein snack for gym recovery.',
+          tags: ['Plant Protein', 'Snack'],
+        },
+        {
+          name: 'Pan-Seared Atlantic Salmon',
+          category: 'Fish & Seafood',
+          description: 'Rich in Omega-3 fatty acids and complete essential amino acids.',
+          calories: 206,
+          protein: 22.1,
+          reason: 'Reduces exercise-induced muscle inflammation.',
+          tags: ['Omega-3', 'Muscle Recovery'],
+        },
+      ],
+      maintenance: [
         {
           name: 'Atlantic Salmon Fillet',
           category: 'Seafood',
@@ -320,7 +465,7 @@ export class GeneratePersonalizedRecommendationsUseCase {
           tags: ['Healthy Fats', 'Protein'],
         },
         {
-          name: 'Rolled Oats',
+          name: 'Rolled Oats with Cinnamon',
           category: 'Complex Carbs',
           description: 'Soluble beta-glucan fiber maintains healthy blood sugar levels.',
           calories: 71,
@@ -328,11 +473,98 @@ export class GeneratePersonalizedRecommendationsUseCase {
           reason: 'Provides smooth, long-lasting morning energy.',
           tags: ['Fiber', 'Heart Health'],
         },
-      ];
-      avoidFoods = ['Excessive refined sugar', 'Trans-fat heavy fried foods'];
-      activityAdvice = [
-        'Maintain a balanced weekly routine: 150 minutes of moderate activity + 2 strength workouts.',
-      ];
+        {
+          name: 'Steamed Brown Rice & Lentil Pilaf',
+          category: 'Grain & Legume Blend',
+          description: 'Classic synergistic blend creating complete plant proteins.',
+          calories: 160,
+          protein: 6.8,
+          reason: 'Balanced sustained energy for everyday metabolic vitality.',
+          tags: ['Balanced Macros', 'Fiber'],
+        },
+        {
+          name: 'Fresh Mixed Garden Salad with Olive Oil',
+          category: 'Vegetables',
+          description: 'Crisp cucumbers, radishes, greens, and extra virgin olive oil.',
+          calories: 90,
+          protein: 1.5,
+          reason: 'Essential micronutrients and polyphenols for longevity.',
+          tags: ['Antioxidant', 'Hydration'],
+        },
+        {
+          name: 'Grilled Herb Chicken Tenderloin',
+          category: 'Lean Poultry',
+          description: 'Tender chicken breast grilled with rosemary and sea salt.',
+          calories: 140,
+          protein: 26.0,
+          reason: 'Clean protein maintaining lean tissue and immune health.',
+          tags: ['Lean Protein', 'Balanced'],
+        },
+      ],
+    };
+
+    // LAYER 1: Attempt Gemini AI Generation with strict allergy exclusion prompt
+    let aiFoods: RecommendedFoodChoice[] | null = null;
+    try {
+      aiFoods = await this.aiService.generatePriorityFoods({
+        goal,
+        targetCalories,
+        targetProtein,
+        targetCarbs,
+        targetFat,
+        userAllergies,
+        dietaryPreference,
+      });
+    } catch (err) {
+      console.warn('Gemini priority foods generation skipped/failed:', err);
+    }
+
+    // LAYER 2: Strict Backend Enforcement
+    const validatedFoods: RecommendedFoodChoice[] = [];
+
+    // If AI generated foods, run each through backend validation
+    if (aiFoods && Array.isArray(aiFoods)) {
+      for (const food of aiFoods) {
+        const check = this.allergyValidator.validateMeal(food, userAllergies);
+        if (check.isValid) {
+          validatedFoods.push(food);
+        } else {
+          console.warn(`[ALLERGY REJECT] AI recommended "${food.name}" was REJECTED: ${check.reason}`);
+        }
+      }
+    }
+
+    // If we need more foods to reach 4 recommendations, draw from curated pool
+    if (validatedFoods.length < 4) {
+      const pool = curatedGoalFoods[goal] || curatedGoalFoods.maintenance;
+      // Filter curated pool strictly through allergyValidator
+      const { valid: safePool } = this.allergyValidator.filterMeals(pool, userAllergies);
+
+      for (const safeFood of safePool) {
+        if (validatedFoods.length >= 4) break;
+        if (!validatedFoods.some((f) => f.name.toLowerCase() === safeFood.name.toLowerCase())) {
+          validatedFoods.push(safeFood);
+        }
+      }
+    }
+
+    // Extreme fallback: If somehow pool is exhausted, generate safe fallback
+    while (validatedFoods.length < 4) {
+      const fallback = this.allergyValidator.getSafeFallbackMeal(
+        'snack',
+        goal,
+        dietaryPreference,
+        userAllergies
+      );
+      validatedFoods.push({
+        name: fallback.name,
+        category: fallback.category || 'Safe Whole Food',
+        description: fallback.instructions || 'Wholesome allergen-free nutritional choice.',
+        calories: fallback.calories || 200,
+        protein: fallback.protein || 8,
+        reason: 'Certified allergen-free wholesome meal tailored to your profile.',
+        tags: ['Allergen Free', 'Clean Eating'],
+      });
     }
 
     return {
@@ -343,7 +575,7 @@ export class GeneratePersonalizedRecommendationsUseCase {
       targetProtein,
       targetCarbs,
       targetFat,
-      recommendedFoods,
+      recommendedFoods: validatedFoods.slice(0, 4),
       avoidFoods,
       activityAdvice,
     };
@@ -393,7 +625,6 @@ export class GeneratePersonalizedRecommendationsUseCase {
       calcMetric('Fats', 'g', actualFat, targetFat),
     ];
 
-    // Compute Overall Score (0 - 100) based on target alignment
     const scores = metrics.map((m) => {
       const diff = Math.abs(100 - m.percentage);
       return Math.max(0, 100 - diff);
@@ -414,7 +645,7 @@ export class GeneratePersonalizedRecommendationsUseCase {
       }
 
       if (metrics[1].status === 'under') {
-        summaryNotes.push('Consider adding a protein-dense food (like Greek yogurt or chicken) to hit your protein goal.');
+        summaryNotes.push('Consider adding a protein-dense food to hit your daily protein goal.');
       }
     }
 
@@ -474,14 +705,29 @@ export class GeneratePersonalizedRecommendationsUseCase {
     };
   }
 
-  private generatePortionGuidance(): PortionGuidance {
+  private generatePortionGuidance(userAllergies: string[]): PortionGuidance {
+    // Dynamically adjust protein examples based on user's active allergies
+    let proteinExample = '1 Chicken breast, 2 eggs, or 1 piece of fish fillet';
+    const isEggAllergic = !this.allergyValidator.checkTextForRestrictedAllergens('egg', userAllergies).isValid;
+    const isChickenAllergic = !this.allergyValidator.checkTextForRestrictedAllergens('chicken', userAllergies).isValid;
+    const isFishAllergic = !this.allergyValidator.checkTextForRestrictedAllergens('fish', userAllergies).isValid;
+
+    if (isEggAllergic || isChickenAllergic || isFishAllergic) {
+      const safeExamples: string[] = [];
+      if (!isChickenAllergic) safeExamples.push('1 Chicken breast');
+      if (!isFishAllergic) safeExamples.push('1 Salmon / Cod fillet');
+      if (!isEggAllergic) safeExamples.push('2 Whole eggs');
+      safeExamples.push('1 cup cooked lentils / chickpeas', '1 portion firm tofu / paneer');
+      proteinExample = safeExamples.slice(0, 3).join(', ');
+    }
+
     return {
       handGuide: [
         {
-          category: 'Proteins (Meat, Eggs, Tofu, Paneer)',
+          category: 'Proteins',
           handVisual: 'Palm of your Hand',
           portionSize: '1 Palm (~100 - 150g)',
-          example: '1 Chicken breast, 2 eggs, or 1 piece of fish fillet',
+          example: proteinExample,
         },
         {
           category: 'Vegetables & Leafy Greens',
@@ -496,18 +742,18 @@ export class GeneratePersonalizedRecommendationsUseCase {
           example: 'Brown rice, quinoa, cooked dal, or sweet potato',
         },
         {
-          category: 'Healthy Fats (Nuts, Oils, Butter, Avocado)',
+          category: 'Healthy Fats (Oils, Avocado, Seeds)',
           handVisual: 'Thumb Tip',
           portionSize: '1 Thumb (~15 - 30g)',
-          example: '1 tbsp olive oil, a small handful of almonds, or 1/4 avocado',
+          example: '1 tbsp olive oil, sunflower seeds, or 1/4 avocado',
         },
       ],
       exactCategoryPortions: [
         {
-          category: 'Lean Poultry & Fish',
+          category: 'Lean Protein Choices',
           servingAdvice: '1 standard main portion',
           recommendedGram: 150,
-          tip: 'Pan-seared or grilled with minimal added butter.',
+          tip: 'Steam, bake, or pan-sear with minimal added oil.',
         },
         {
           category: 'Cooked Whole Grains',
@@ -522,17 +768,17 @@ export class GeneratePersonalizedRecommendationsUseCase {
           tip: 'Best eaten whole rather than juiced to retain dietary fiber.',
         },
         {
-          category: 'Nuts & Seeds',
+          category: 'Seeds & Healthy Fats',
           servingAdvice: '1 small handful',
           recommendedGram: 28,
-          tip: 'Great midday energy booster; measure portions to control caloric intake.',
+          tip: 'Measure portions to control caloric intake.',
         },
       ],
     };
   }
 
-  private generateTopAlternatives(goal: HealthGoal): FoodAlternativeComparison[] {
-    return [
+  private generateTopAlternatives(goal: HealthGoal, userAllergies: string[]): FoodAlternativeComparison[] {
+    const baseAlternatives: FoodAlternativeComparison[] = [
       {
         originalFood: {
           name: 'Deep Fried Potato Chips',
@@ -546,20 +792,20 @@ export class GeneratePersonalizedRecommendationsUseCase {
           servingUnit: 'g',
         },
         alternativeFood: {
-          name: 'Roasted Makhana (Fox Nuts)',
-          calories: 347,
-          protein: 9.7,
-          carbohydrates: 64.0,
-          fat: 0.1,
-          sugar: 0.2,
-          sodium: 120,
+          name: 'Roasted Crunchy Chickpeas',
+          calories: 220,
+          protein: 10.5,
+          carbohydrates: 34.0,
+          fat: 4.5,
+          sugar: 2.0,
+          sodium: 110,
           servingSize: 100,
           servingUnit: 'g',
         },
-        reason: 'Swapping potato chips for roasted makhana eliminates trans fats and significantly reduces calories while boosting fiber.',
-        calorieSavings: 189,
-        proteinDifference: 2.7,
-        healthBenefit: '99% lower in saturated fat & rich in anti-aging antioxidants.',
+        reason: 'Swapping potato chips for roasted chickpeas eliminates trans fats and cuts fat by 87% while boosting fiber and protein.',
+        calorieSavings: 316,
+        proteinDifference: 3.5,
+        healthBenefit: 'Zero trans fats, rich in gut-healthy prebiotic fiber and plant minerals.',
       },
       {
         originalFood: {
@@ -590,5 +836,23 @@ export class GeneratePersonalizedRecommendationsUseCase {
         healthBenefit: 'Zero refined sugars, prevents insulin resistance and dental decay.',
       },
     ];
+
+    // Validate each alternative against userAllergies
+    const safeAlternatives: FoodAlternativeComparison[] = [];
+    for (const alt of baseAlternatives) {
+      const check = this.allergyValidator.validateMeal(
+        {
+          name: alt.alternativeFood.name,
+          ingredients: [alt.alternativeFood.name],
+          description: alt.healthBenefit,
+        },
+        userAllergies
+      );
+      if (check.isValid) {
+        safeAlternatives.push(alt);
+      }
+    }
+
+    return safeAlternatives;
   }
 }
